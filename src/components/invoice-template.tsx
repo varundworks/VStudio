@@ -40,7 +40,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
   const total = subtotal + taxAmount;
 
   return (
-    <div className="a4-page bg-white text-gray-900 font-sans text-sm relative overflow-hidden">
+    <div className="bg-white text-gray-900 font-sans text-sm relative overflow-hidden">
         {/* Header Curves */}
         <div className="absolute top-0 right-0 h-48 w-96 bg-zinc-800 rounded-bl-full"></div>
         <div className="absolute top-0 right-0 h-40 w-80 bg-amber-400 rounded-bl-full"></div>
@@ -68,7 +68,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
         
         <section className="grid grid-cols-2 gap-8 my-10">
           <div>
-            <h1 className="text-5xl font-bold text-zinc-800">INVOICE</h1>
+            <h1 className="text-5xl font-bold text-zinc-800 break-words">INVOICE</h1>
             <div className="mt-4 text-sm text-gray-600 space-y-1">
                 <p><strong>Invoice No:</strong> INV-001</p>
                 <p><strong>Account No:</strong> ACC-001</p>
@@ -78,21 +78,23 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
           </div>
           <div className="text-left pl-10">
             <h3 className="text-lg font-bold text-gray-800 mb-2">INVOICE TO</h3>
-            <p className="font-semibold text-gray-700">{client?.name || 'Select a client'}</p>
-            <div className="text-xs text-gray-600 mt-1">
-                <p>Company Name</p>
-                <p>P: +000 0000 000</p>
-                <p>E: {client?.email}</p>
-                <p>A: {client?.address}</p>
+            <div className="text-sm text-gray-700 break-words">
+                <p className="font-semibold">{client?.name || 'Select a client'}</p>
+                <div className="text-xs text-gray-600 mt-1 space-y-px">
+                    <p>Company Name</p>
+                    <p>P: +000 0000 000</p>
+                    <p>E: {client?.email}</p>
+                    <p>A: {client?.address}</p>
+                </div>
             </div>
           </div>
         </section>
         
         <section>
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead className="bg-amber-400 text-zinc-800">
               <tr>
-                <th className="p-3 text-left font-bold uppercase">Item Description</th>
+                <th className="p-3 text-left font-bold uppercase w-1/2">Item Description</th>
                 <th className="p-3 w-32 text-center font-bold uppercase">Unit Price</th>
                 <th className="p-3 w-24 text-center font-bold uppercase">Quantity</th>
                 <th className="p-3 w-32 text-right font-bold uppercase">Total</th>
@@ -101,7 +103,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
             <tbody>
               {(data.items || []).map((item, index) => (
                 <tr key={index} className="border-b">
-                  <td className="p-3 align-top">
+                  <td className="p-3 align-top break-words">
                     <p className="font-semibold">{item.description}</p>
                     <p className="text-xs text-gray-500">Lorem ipsum is simply dummy text of the printing and typesetting industry.</p>
                   </td>
@@ -136,7 +138,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
         <section className="mt-12 grid grid-cols-2 gap-8">
             <div>
                 <h4 className="font-bold text-gray-800 mb-2">PAYMENT METHODS</h4>
-                <div className="text-xs space-y-2 text-gray-600">
+                <div className="text-xs space-y-2 text-gray-600 break-words">
                     <div>
                         <p className="font-semibold">By Bank</p>
                         <p>Account Name: Name Here</p>
@@ -151,7 +153,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
             </div>
             <div>
                 <h4 className="font-bold text-gray-800 mb-2">TERMS & CONDITIONS</h4>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600 break-words">
                     Lorem Ipsum has been the industry's standard dummy text a type specimen book of Letraset sheets containing.
                 </p>
             </div>
