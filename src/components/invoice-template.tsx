@@ -50,18 +50,18 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
           <div className="flex items-center gap-4">
             <LogoPlaceholder />
           </div>
-          <div className="text-right text-xs space-y-1 text-white pr-4 pt-2">
-            <div className="flex items-center justify-end gap-2">
+          <div className="text-right text-[10px] space-y-0.5 text-white pr-4 pt-2 max-w-[200px] break-words">
+            <div className="flex items-center justify-end gap-1.5">
                 <span>000 000 000</span>
-                <Phone className="w-3 h-3" />
+                <Phone className="w-2.5 h-2.5" />
             </div>
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-1.5">
                 <span>your.mail@here</span>
-                <Mail className="w-3 h-3" />
+                <Mail className="w-2.5 h-2.5" />
             </div>
-             <div className="flex items-center justify-end gap-2">
+             <div className="flex items-center justify-end gap-1.5">
                 <span>Address Here, City Here 1234</span>
-                <MapPin className="w-3 h-3" />
+                <MapPin className="w-2.5 h-2.5" />
             </div>
           </div>
         </header>
