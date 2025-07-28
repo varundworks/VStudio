@@ -2,35 +2,11 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import { Phone, Mail, MapPin } from 'lucide-react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
     clients: { id: string; name: string; address: string; email: string; }[];
 }
-
-const LogoPlaceholder = () => (
-    <div className="flex items-center gap-2">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-8 w-8 text-gray-700"
-        >
-            <path d="M12 2L2 7l10 5 10-5-10-5z" opacity="0.5"/>
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-        </svg>
-        <span className="font-semibold text-gray-700 uppercase">Company Name</span>
-    </div>
-);
-
 
 export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
   const client = clients.find(c => c.id === data.clientId);
@@ -40,128 +16,98 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
   const total = subtotal + taxAmount;
 
   return (
-    <div className="bg-white text-gray-900 font-sans text-sm relative overflow-hidden">
-        {/* Header Curves */}
-        <div className="absolute top-0 right-0 h-48 w-96 bg-zinc-800 rounded-bl-full"></div>
-        <div className="absolute top-0 right-0 h-40 w-80 bg-amber-400 rounded-bl-full"></div>
-      
-      <div className="p-8 relative z-10">
-        <header className="flex justify-between items-start pb-6">
-          <div className="flex items-center gap-4">
-            <LogoPlaceholder />
+    <div className="bg-white text-gray-900 font-sans p-10 text-sm shadow-lg max-w-4xl mx-auto border border-gray-200 rounded">
+      {/* HEADER */}
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="text-3xl font-bold text-amber-500 mb-2">LOREM</div>
+          <div className="text-xs text-gray-600 space-y-1">
+            <p><strong>Phone:</strong> +999 123 456 789</p>
+            <p><strong>Email:</strong> info@yourname.com</p>
+            <p><strong>Web:</strong> www.domain.com</p>
+            <p><strong>Area:</strong> 123 Street, Town, Postal</p>
           </div>
-          <div className="text-right text-[10px] space-y-0.5 text-white pr-4 pt-2 max-w-[200px] break-words">
-            <div className="flex items-center justify-end gap-1.5">
-                <span>000 000 000</span>
-                <Phone className="w-2.5 h-2.5" />
-            </div>
-            <div className="flex items-center justify-end gap-1.5">
-                <span>your.mail@here</span>
-                <Mail className="w-2.5 h-2.5" />
-            </div>
-             <div className="flex items-center justify-end gap-1.5">
-                <span className="max-w-[180px]">Address Here, City Here 1234</span>
-                <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
-            </div>
-          </div>
-        </header>
-        
-        <section className="grid grid-cols-2 gap-8 my-10">
-          <div>
-            <h1 className="text-4xl font-bold text-zinc-800 break-words">INVOICE</h1>
-            <div className="mt-4 text-sm text-gray-600 space-y-1">
-                <p><strong>Invoice No:</strong> INV-001</p>
-                <p><strong>Account No:</strong> ACC-001</p>
-                <p><strong>Invoice Date:</strong> {data.invoiceDate ? format(data.invoiceDate, "dd/MM/yyyy") : 'N/A'}</p>
-                <p><strong>Due Date:</strong> {data.dueDate ? format(data.dueDate, "dd/MM/yyyy") : 'N/A'}</p>
-            </div>
-          </div>
-          <div className="text-left pl-10">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">INVOICE TO</h3>
-            <div className="text-sm text-gray-700 break-words">
-                <p className="font-semibold">{client?.name || 'Select a client'}</p>
-                <div className="text-xs text-gray-600 mt-1 space-y-px">
-                    <p>{client?.name}</p>
-                    <p>P: +000 0000 000</p>
-                    <p>E: {client?.email}</p>
-                    <p>A: {client?.address}</p>
-                </div>
-            </div>
-          </div>
-        </section>
-        
-        <section>
-          <table className="w-full table-auto">
-            <thead className="bg-amber-400 text-zinc-800">
-              <tr>
-                <th className="p-3 text-left font-bold uppercase w-1/2">Item Description</th>
-                <th className="p-3 w-32 text-center font-bold uppercase">Unit Price</th>
-                <th className="p-3 w-24 text-center font-bold uppercase">Quantity</th>
-                <th className="p-3 w-32 text-right font-bold uppercase">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data.items || []).map((item, index) => (
-                <tr key={index} className="border-b">
-                  <td className="p-3 align-top break-words">
-                    <p className="font-semibold">{item.description}</p>
-                  </td>
-                  <td className="p-3 text-center align-top">${(Number(item.rate) || 0).toFixed(2)}</td>
-                  <td className="p-3 text-center align-top">{Number(item.quantity) || 0}</td>
-                  <td className="p-3 text-right align-top">${((Number(item.quantity) || 0) * (Number(item.rate) || 0)).toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-        
-        <section className="flex justify-end mt-4">
-          <div className="w-full max-w-sm space-y-2 text-gray-700">
-            <div className="flex justify-between">
-              <span>Sub Total</span>
-              <span className="font-mono">${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Vat({Number(data.tax) || 0}%)</span>
-              <span className="font-mono">${taxAmount.toFixed(2)}</span>
-            </div>
-            <div className="border-t border-gray-300 pt-2 mt-2">
-              <div className="flex justify-between font-bold text-lg text-amber-500">
-                <span>Grand Total</span>
-                <span className="font-mono">${total.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-12 grid grid-cols-2 gap-8">
-            <div>
-                <h4 className="font-bold text-gray-800 mb-2">PAYMENT METHODS</h4>
-                <div className="text-xs space-y-2 text-gray-600 break-words">
-                    <div>
-                        <p className="font-semibold">By Bank</p>
-                        <p>Account Name: Name Here</p>
-                        <p>Account Number: 0123456789</p>
-                        <p>Branch Name: ABCD</p>
-                    </div>
-                    <div>
-                        <p className="font-semibold">By Online</p>
-                        <p>A secure payment link can be provided upon request.</p>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h4 className="font-bold text-gray-800 mb-2">TERMS & CONDITIONS</h4>
-                <p className="text-xs text-gray-600 break-words">
-                    Payment is due within 30 days of the invoice date. Late payments may be subject to a service charge.
-                </p>
-            </div>
-        </section>
+        </div>
+        <div className="text-right space-y-1">
+          <p className="text-xs text-gray-600">To:</p>
+          <p className="font-semibold">{client?.name}</p>
+          <p className="text-xs">{client?.address}</p>
+          <p className="text-xs">{client?.email}</p>
+          <p className="text-xs">+000 0000 000</p>
+        </div>
       </div>
-      
-       {/* Footer Curves */}
-       <div className="absolute bottom-0 left-0 h-32 w-full bg-zinc-800" style={{clipPath: 'ellipse(100% 60% at 0% 100%)'}}></div>
-       <div className="absolute bottom-0 left-0 h-24 w-full bg-amber-400" style={{clipPath: 'ellipse(100% 60% at 0% 100%)'}}></div>
+
+      {/* INVOICE HEADER */}
+      <div className="mt-8 mb-4 text-right text-sm text-gray-600 space-y-1">
+        <p><strong>Invoice No:</strong> {'001'}</p>
+        <p><strong>Account No:</strong> {'XXXX'}</p>
+        <p><strong>Date:</strong> {data.invoiceDate ? format(data.invoiceDate, 'dd/MM/yyyy') : 'N/A'}</p>
+      </div>
+
+      {/* TABLE */}
+      <div className="mt-6">
+        <table className="w-full border-collapse text-left">
+          <thead className="bg-amber-400 text-zinc-800 uppercase text-xs">
+            <tr>
+              <th className="p-2">Item Description</th>
+              <th className="p-2 text-center">Price</th>
+              <th className="p-2 text-center">Qty</th>
+              <th className="p-2 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data.items || []).map((item, idx) => (
+              <tr key={idx} className="border-b">
+                <td className="p-2 text-gray-700">
+                  <div className="font-semibold">{item.description}</div>
+                  <p className="text-xs text-gray-500">Service work</p>
+                </td>
+                <td className="p-2 text-center">${(Number(item.rate) || 0).toFixed(2)}</td>
+                <td className="p-2 text-center">{Number(item.quantity) || 0}</td>
+                <td className="p-2 text-right">${((Number(item.quantity) || 0) * (Number(item.rate) || 0)).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* TOTALS */}
+      <div className="mt-4 flex justify-end">
+        <div className="w-full max-w-xs text-sm space-y-1">
+          <div className="flex justify-between">
+            <span>Sub Total</span>
+            <span>${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Tax Vat ({Number(data.tax) || 0}%)</span>
+            <span>${taxAmount.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between bg-amber-500 text-white font-bold p-2 mt-2 rounded">
+            <span>Grand Total</span>
+            <span>${total.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* PAYMENT INFO */}
+      <div className="mt-8 text-xs text-gray-700">
+        <p className="font-bold mb-1">PAYMENT INFO</p>
+        <p>Paypal: paypal@company.com</p>
+        <p>Payment: Visa, Master Card</p>
+        <p>We accept cheque</p>
+      </div>
+
+      {/* FOOTER */}
+      <div className="mt-8 flex justify-between items-center text-xs text-gray-600">
+        <div>
+          <p>Thank you for your business!</p>
+          <p className="text-[10px]">Terms: Payment due within 30 days</p>
+        </div>
+        <div className="text-right">
+          <p className="font-bold">Thomas Daney</p>
+          <p>Accounting Manager</p>
+        </div>
+      </div>
     </div>
   );
 }
