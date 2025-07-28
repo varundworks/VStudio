@@ -60,15 +60,15 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
                 <Mail className="w-2.5 h-2.5" />
             </div>
              <div className="flex items-center justify-end gap-1.5">
-                <span>Address Here, City Here 1234</span>
-                <MapPin className="w-2.5 h-2.5" />
+                <span className="max-w-[180px]">Address Here, City Here 1234</span>
+                <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
             </div>
           </div>
         </header>
         
         <section className="grid grid-cols-2 gap-8 my-10">
           <div>
-            <h1 className="text-5xl font-bold text-zinc-800 break-words">INVOICE</h1>
+            <h1 className="text-4xl font-bold text-zinc-800 break-words">INVOICE</h1>
             <div className="mt-4 text-sm text-gray-600 space-y-1">
                 <p><strong>Invoice No:</strong> INV-001</p>
                 <p><strong>Account No:</strong> ACC-001</p>
@@ -81,7 +81,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
             <div className="text-sm text-gray-700 break-words">
                 <p className="font-semibold">{client?.name || 'Select a client'}</p>
                 <div className="text-xs text-gray-600 mt-1 space-y-px">
-                    <p>Company Name</p>
+                    <p>{client?.name}</p>
                     <p>P: +000 0000 000</p>
                     <p>E: {client?.email}</p>
                     <p>A: {client?.address}</p>
@@ -91,7 +91,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
         </section>
         
         <section>
-          <table className="w-full table-fixed">
+          <table className="w-full table-auto">
             <thead className="bg-amber-400 text-zinc-800">
               <tr>
                 <th className="p-3 text-left font-bold uppercase w-1/2">Item Description</th>
@@ -105,7 +105,6 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
                 <tr key={index} className="border-b">
                   <td className="p-3 align-top break-words">
                     <p className="font-semibold">{item.description}</p>
-                    <p className="text-xs text-gray-500">Lorem ipsum is simply dummy text of the printing and typesetting industry.</p>
                   </td>
                   <td className="p-3 text-center align-top">${(Number(item.rate) || 0).toFixed(2)}</td>
                   <td className="p-3 text-center align-top">{Number(item.quantity) || 0}</td>
@@ -147,14 +146,14 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
                     </div>
                     <div>
                         <p className="font-semibold">By Online</p>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                        <p>A secure payment link can be provided upon request.</p>
                     </div>
                 </div>
             </div>
             <div>
                 <h4 className="font-bold text-gray-800 mb-2">TERMS & CONDITIONS</h4>
                 <p className="text-xs text-gray-600 break-words">
-                    Lorem Ipsum has been the industry's standard dummy text a type specimen book of Letraset sheets containing.
+                    Payment is due within 30 days of the invoice date. Late payments may be subject to a service charge.
                 </p>
             </div>
         </section>
