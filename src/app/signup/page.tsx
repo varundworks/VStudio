@@ -5,36 +5,38 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import VStudioIcon from '@/components/v-studio-icon';
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="mx-auto w-full max-w-sm">
         <CardHeader className="text-center">
           <VStudioIcon className="mx-auto h-12 w-12" />
-          <CardTitle className="text-2xl font-headline mt-4">Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardTitle className="text-2xl font-headline mt-4">Create an account</CardTitle>
+          <CardDescription>Enter your information to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="full-name">Full Name</Label>
+              <Input id="full-name" placeholder="Max Robinson" required />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full" asChild>
-              <Link href="/dashboard">Login</Link>
+                <Link href="/dashboard">Create account</Link>
             </Button>
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/signup">Sign up</Link>
-            </Button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Already have an account?{' '}
+            <Link href="/" className="underline">
+              Log in
+            </Link>
           </div>
         </CardContent>
       </Card>
