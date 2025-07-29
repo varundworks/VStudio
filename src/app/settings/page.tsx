@@ -8,14 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAuth } from '@/contexts/auth-context';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface SettingsData {
     logo: string;
@@ -41,7 +39,6 @@ export default function SettingsPage() {
   const [template, setTemplate] = useState('classic');
   const [themeColor, setThemeColor] = useState('#F39C12');
 
-  const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -69,33 +66,6 @@ export default function SettingsPage() {
       fetchSettings();
     }
   }, [user]);
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user || !e.target.files || e.target.files.length === 0) {
-      return;
-    }
-
-    const file = e.target.files[0];
-    if (!file) {
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      const storageRef = ref(storage, `logos/${user.uid}/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      setLogo(downloadURL);
-      toast({ title: 'Logo uploaded successfully!' });
-    } catch (error) {
-      console.error("Error uploading logo:", error);
-      toast({ variant: 'destructive', title: 'Logo Upload Failed', description: 'Could not upload logo. Please try again.' });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
 
   const handleSaveChanges = async () => {
     if (!user) {
@@ -274,26 +244,19 @@ export default function SettingsPage() {
             <div className="flex items-center gap-6">
               <div className="shrink-0">
                 <Image
-                  src={logo}
+                  src={logo || 'https://placehold.co/80x80.png'}
                   alt="Current Logo"
                   width={80}
                   height={80}
                   className="rounded-lg object-cover"
                   data-ai-hint="logo company"
+                  unoptimized
                 />
               </div>
               <div className="flex-1">
-                <Label>Company Logo</Label>
-                <div className="flex gap-2 mt-2">
-                    <Label htmlFor="logo-upload" className="flex-1">
-                      <div className="w-full h-10 px-3 py-2 text-sm border rounded-md cursor-pointer flex items-center justify-center bg-background hover:bg-accent hover:text-accent-foreground">
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>{isUploading ? 'Uploading...' : 'Upload Image'}</span>
-                      </div>
-                      <Input id="logo-upload" type="file" className="sr-only" onChange={handleLogoUpload} accept="image/*" disabled={isUploading}/>
-                   </Label>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Recommended size: 200x200px. Max file size: 2MB.</p>
+                <Label htmlFor="logo-url">Logo URL</Label>
+                <Input id="logo-url" placeholder="https://example.com/logo.png" value={logo} onChange={(e) => setLogo(e.target.value)} />
+                <p className="text-xs text-muted-foreground mt-2">Paste a URL to your company's logo.</p>
               </div>
             </div>
           </CardContent>
@@ -329,7 +292,7 @@ export default function SettingsPage() {
         </Card>
 
          <div className="flex justify-end">
-            <Button onClick={handleSaveChanges} disabled={isSaving || isUploading}>
+            <Button onClick={handleSaveChanges} disabled={isSaving}>
                 {isSaving ? 'Saving...' : 'Save Changes'}
             </Button>
          </div>
