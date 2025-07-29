@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/sidebar';
 import VStudioIcon from '@/components/v-studio-icon';
 import { Button } from '@/components/ui/button';
-import { Home, Users, FilePlus, Settings, LogOut, Search } from 'lucide-react';
+import { Home, Users, FilePlus, Settings, LogOut, Search, FileText } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Input } from './ui/input';
 
@@ -45,10 +45,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </SidebarHeader>
             <SidebarMenu className="flex-1">
               <SidebarMenuItem>
-                <Link href="/dashboard">
-                  <SidebarMenuButton tooltip="Dashboard">
-                    <Home />
-                    <span>Dashboard</span>
+                <Link href="/invoices">
+                  <SidebarMenuButton tooltip="Invoices">
+                    <FileText />
+                    <span>Invoices</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
