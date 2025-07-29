@@ -2,6 +2,7 @@
 
 import { ClassicTemplate } from './invoice-template-classic';
 import { ModernTemplate } from './invoice-template-modern';
+import { ProfessionalTemplate } from './invoice-template-professional';
 import type { InvoiceFormValues } from './invoice-form';
 
 interface InvoiceTemplateProps {
@@ -15,6 +16,8 @@ export function InvoiceTemplate({ data, clients, template, themeColor }: Invoice
     switch (template) {
         case 'modern':
             return <ModernTemplate data={data} clients={clients} themeColor={themeColor} />;
+        case 'professional':
+            return <ProfessionalTemplate data={data} clients={clients} themeColor={themeColor} />;
         case 'classic':
         default:
             return <ClassicTemplate data={data} clients={clients} themeColor={themeColor} />;
