@@ -1,13 +1,8 @@
+
 'use client';
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import { useEffect, useState } from 'react';
-
-interface InvoiceTemplateProps {
-    data: InvoiceFormValues;
-    themeColor: string;
-}
 
 interface BrandingInfo {
     name: string;
@@ -18,28 +13,16 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ProfessionalTemplate({ data, themeColor }: InvoiceTemplateProps) {
-  const [branding, setBranding] = useState<BrandingInfo | null>(null);
+interface ProfessionalTemplateProps {
+    data: InvoiceFormValues;
+    brandingInfo: BrandingInfo & { themeColor: string };
+}
 
-  useEffect(() => {
-    // Cannot access localStorage on the server, so we do it in useEffect.
-    const savedName = localStorage.getItem('vstudio-name') || 'Your Company';
-    const savedEmail = localStorage.getItem('vstudio-email') || 'your@email.com';
-    const savedLogo = localStorage.getItem('vstudio-logo') || 'https://placehold.co/80x80.png';
-    const savedPhone = localStorage.getItem('vstudio-phone') || '+999 123 456 789';
-    const savedWeb = localStorage.getItem('vstudio-web') || 'www.domain.com';
-    const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
-    setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
-  }, []);
-
+export function ProfessionalTemplate({ data, brandingInfo }: ProfessionalTemplateProps) {
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
-
-  if (!branding) {
-    // You can return a loading state or a default template here
-    return <div>Loading branding...</div>;
-  }
+  const themeColor = brandingInfo.themeColor || '#0055a5';
   
   const headerStyle = {
     background: `linear-gradient(to right, ${themeColor}, #0055a5)`,
@@ -64,9 +47,9 @@ export function ProfessionalTemplate({ data, themeColor }: InvoiceTemplateProps)
         </div>
         <div className="w-[45%]">
           <p className="font-bold">From:</p>
-          <p>{branding.name}</p>
-          <p>{branding.phone}</p>
-          <p>{branding.area}</p>
+          <p>{brandingInfo.name}</p>
+          <p>{brandingInfo.phone}</p>
+          <p>{brandingInfo.area}</p>
         </div>
       </div>
 
@@ -115,7 +98,7 @@ export function ProfessionalTemplate({ data, themeColor }: InvoiceTemplateProps)
         <strong>Payment Information:</strong>
         <p><strong>Bank:</strong> Name Bank</p>
         <p><strong>No Bank:</strong> 123-456-7890</p>
-        <p><strong>Email:</strong> {branding.email}</p>
+        <p><strong>Email:</strong> {brandingInfo.email}</p>
       </div>
 
       <div className="text-right text-2xl font-bold mt-10" style={{color: themeColor}}>

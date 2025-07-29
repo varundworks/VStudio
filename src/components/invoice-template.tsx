@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ClassicTemplate } from './invoice-template-classic';
@@ -6,22 +7,32 @@ import { ModernTemplate } from './invoice-template-modern';
 import { ProfessionalTemplate } from './invoice-template-professional';
 import type { InvoiceFormValues } from './invoice-form';
 
-interface InvoiceTemplateProps {
-    data: InvoiceFormValues;
+interface BrandingInfo {
+    name: string;
+    email: string;
+    logo: string;
+    phone: string;
+    web: string;
+    area: string;
     template: string;
     themeColor: string;
 }
 
-export function InvoiceTemplate({ data, template, themeColor }: InvoiceTemplateProps) {
-    switch (template) {
+interface InvoiceTemplateProps {
+    data: InvoiceFormValues;
+    brandingInfo: BrandingInfo;
+}
+
+export function InvoiceTemplate({ data, brandingInfo }: InvoiceTemplateProps) {
+    switch (brandingInfo.template) {
         case 'modern':
-            return <ModernTemplate data={data} themeColor={themeColor} />;
+            return <ModernTemplate data={data} brandingInfo={brandingInfo} />;
         case 'professional':
-            return <ProfessionalTemplate data={data} themeColor={themeColor} />;
+            return <ProfessionalTemplate data={data} brandingInfo={brandingInfo} />;
         case 'ginyard':
-            return <GinyardTemplate data={data} themeColor={themeColor} />;
+            return <GinyardTemplate data={data} brandingInfo={brandingInfo} />;
         case 'classic':
         default:
-            return <ClassicTemplate data={data} themeColor={themeColor} />;
+            return <ClassicTemplate data={data} brandingInfo={brandingInfo} />;
     }
 }

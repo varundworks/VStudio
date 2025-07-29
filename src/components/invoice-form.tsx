@@ -21,6 +21,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { InvoiceTemplate } from './invoice-template';
+import { useAuth } from '@/contexts/auth-context';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const invoiceSchema = z.object({
   clientName: z.string().min(1, 'Client name is required.'),
@@ -40,18 +43,47 @@ const invoiceSchema = z.object({
 
 export type InvoiceFormValues = z.infer<typeof invoiceSchema>;
 
+interface BrandingInfo {
+    name: string;
+    email: string;
+    logo: string;
+    phone: string;
+    web: string;
+    area: string;
+    template: string;
+    themeColor: string;
+}
+
 export function InvoiceForm() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [template, setTemplate] = useState('classic');
-  const [themeColor, setThemeColor] = useState('#F39C12');
+  const [brandingInfo, setBrandingInfo] = useState<BrandingInfo | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const savedTemplate = localStorage.getItem('vstudio-template');
-    const savedThemeColor = localStorage.getItem('vstudio-theme-color');
-    if (savedTemplate) setTemplate(savedTemplate);
-    if (savedThemeColor) setThemeColor(savedThemeColor);
-  }, []);
+    if (user) {
+        const fetchSettings = async () => {
+            const settingsDocRef = doc(db, 'settings', user.uid);
+            const docSnap = await getDoc(settingsDocRef);
+            if (docSnap.exists()) {
+                setBrandingInfo(docSnap.data() as BrandingInfo);
+            } else {
+                 setBrandingInfo({
+                    name: 'Your Company',
+                    email: 'your@email.com',
+                    logo: 'https://placehold.co/80x80.png',
+                    phone: '',
+                    web: '',
+                    area: '',
+                    template: 'classic',
+                    themeColor: '#004E45'
+                });
+            }
+        };
+        fetchSettings();
+    }
+  }, [user]);
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
@@ -71,8 +103,6 @@ export function InvoiceForm() {
     name: 'items',
   });
   
-  const { toast } = useToast();
-  
   const watchItems = form.watch('items');
   const watchTax = form.watch('tax');
   const subtotal = watchItems.reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
@@ -80,8 +110,13 @@ export function InvoiceForm() {
   const total = subtotal + taxAmount;
 
   function onSubmit(data: InvoiceFormValues) {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save an invoice.' });
+        return;
+    }
     try {
-      const storedInvoicesRaw = localStorage.getItem('vstudio-invoices');
+      const storageKey = `vstudio-invoices-${user.uid}`;
+      const storedInvoicesRaw = localStorage.getItem(storageKey);
       const storedInvoices = storedInvoicesRaw ? JSON.parse(storedInvoicesRaw) : [];
       
       const newInvoice = {
@@ -91,7 +126,7 @@ export function InvoiceForm() {
       };
 
       storedInvoices.push(newInvoice);
-      localStorage.setItem('vstudio-invoices', JSON.stringify(storedInvoices));
+      localStorage.setItem(storageKey, JSON.stringify(storedInvoices));
 
       toast({
           title: "Invoice Saved!",
@@ -129,7 +164,7 @@ export function InvoiceForm() {
 
   const handleGeneratePDF = async () => {
     const data = await validateAndGetData();
-    if (!data) return;
+    if (!data || !brandingInfo) return;
     
     setIsGeneratingPDF(true);
     const invoiceElement = document.createElement('div');
@@ -143,7 +178,7 @@ export function InvoiceForm() {
     const root = createRoot(invoiceElement);
     root.render(
         <div className="w-[210mm] h-[297mm]">
-            <InvoiceTemplate data={data} template={template} themeColor={themeColor}/>
+            <InvoiceTemplate data={data} brandingInfo={brandingInfo} />
         </div>
     );
     
@@ -183,7 +218,7 @@ export function InvoiceForm() {
                 <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             <div className="overflow-auto h-full border rounded-md">
-              <InvoiceTemplate data={form.getValues()} template={template} themeColor={themeColor}/>
+              {brandingInfo && <InvoiceTemplate data={form.getValues()} brandingInfo={brandingInfo}/>}
             </div>
         </DialogContent>
       </Dialog>

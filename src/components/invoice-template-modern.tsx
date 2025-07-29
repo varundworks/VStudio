@@ -1,14 +1,9 @@
+
 'use client';
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-
-interface InvoiceTemplateProps {
-    data: InvoiceFormValues;
-    themeColor: string;
-}
 
 interface BrandingInfo {
     name: string;
@@ -19,35 +14,23 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ModernTemplate({ data, themeColor }: InvoiceTemplateProps) {
-  const [branding, setBranding] = useState<BrandingInfo | null>(null);
+interface ModernTemplateProps {
+    data: InvoiceFormValues;
+    brandingInfo: BrandingInfo & { themeColor: string };
+}
 
-  useEffect(() => {
-    // Cannot access localStorage on the server, so we do it in useEffect.
-    const savedName = localStorage.getItem('vstudio-name') || 'Your Company';
-    const savedEmail = localStorage.getItem('vstudio-email') || 'your@email.com';
-    const savedLogo = localStorage.getItem('vstudio-logo') || 'https://placehold.co/80x80.png';
-    const savedPhone = localStorage.getItem('vstudio-phone') || '+999 123 456 789';
-    const savedWeb = localStorage.getItem('vstudio-web') || 'www.domain.com';
-    const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
-    setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
-  }, []);
-
+export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
-
-  if (!branding) {
-    // You can return a loading state or a default template here
-    return <div>Loading branding...</div>;
-  }
+  const themeColor = brandingInfo.themeColor || '#004E45';
 
   return (
     <div className="bg-white text-gray-800 font-sans p-8 text-sm w-full h-full">
       <div className="grid grid-cols-3 gap-10">
         <div className="col-span-2">
            <Image
-              src={branding.logo}
+              src={brandingInfo.logo}
               alt="Company Logo"
               width={60}
               height={60}
@@ -55,8 +38,8 @@ export function ModernTemplate({ data, themeColor }: InvoiceTemplateProps) {
               data-ai-hint="logo company"
             />
           <p className="text-gray-500">From</p>
-          <h2 className="text-lg font-bold text-gray-900 mt-1">{branding.name}</h2>
-          <p className="text-xs text-gray-600 mt-1">{branding.area}</p>
+          <h2 className="text-lg font-bold text-gray-900 mt-1">{brandingInfo.name}</h2>
+          <p className="text-xs text-gray-600 mt-1">{brandingInfo.area}</p>
         </div>
         <div className="text-right">
           <h1 className="text-3xl font-bold" style={{color: themeColor}}>INVOICE</h1>
@@ -122,7 +105,7 @@ export function ModernTemplate({ data, themeColor }: InvoiceTemplateProps) {
       
       <div className="mt-16 text-center text-xs text-gray-500">
         <p>Thank you for choosing us!</p>
-        <p className="mt-1">{branding.email} | {branding.web}</p>
+        <p className="mt-1">{brandingInfo.email} | {brandingInfo.web}</p>
       </div>
 
     </div>

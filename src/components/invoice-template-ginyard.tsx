@@ -3,12 +3,6 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import { useEffect, useState } from 'react';
-
-interface InvoiceTemplateProps {
-    data: InvoiceFormValues;
-    themeColor: string;
-}
 
 interface BrandingInfo {
     name: string;
@@ -17,6 +11,11 @@ interface BrandingInfo {
     phone: string;
     web: string;
     area: string;
+}
+
+interface GinyardTemplateProps {
+    data: InvoiceFormValues;
+    brandingInfo: BrandingInfo & { themeColor: string };
 }
 
 // Helper to lighten a hex color
@@ -34,28 +33,12 @@ function lightenColor(hex: string, percent: number) {
 }
 
 
-export function GinyardTemplate({ data, themeColor }: InvoiceTemplateProps) {
-  const [branding, setBranding] = useState<BrandingInfo | null>(null);
-
-  useEffect(() => {
-    // Cannot access localStorage on the server, so we do it in useEffect.
-    const savedName = localStorage.getItem('vstudio-name') || 'Your Company';
-    const savedEmail = localStorage.getItem('vstudio-email') || 'your@email.com';
-    const savedLogo = localStorage.getItem('vstudio-logo') || 'https://placehold.co/80x80.png';
-    const savedPhone = localStorage.getItem('vstudio-phone') || '+999 123 456 789';
-    const savedWeb = localStorage.getItem('vstudio-web') || 'www.domain.com';
-    const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
-    setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
-  }, []);
-
+export function GinyardTemplate({ data, brandingInfo }: GinyardTemplateProps) {
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
+  const themeColor = brandingInfo.themeColor || '#a94ad1';
 
-  if (!branding) {
-    return <div>Loading branding...</div>;
-  }
-  
   const headerStyle = {
     backgroundColor: lightenColor(themeColor, 50),
   };
@@ -64,7 +47,7 @@ export function GinyardTemplate({ data, themeColor }: InvoiceTemplateProps) {
       <div style={{backgroundColor: themeColor, backgroundImage: `repeating-linear-gradient(45deg, ${lightenColor(themeColor, -25)}, ${lightenColor(themeColor, -25)} 20px, ${themeColor} 20px, ${themeColor} 40px)`}} className="text-white font-sans p-8 w-full h-full">
           <h1 className="text-4xl font-bold mb-1">INVOICE</h1>
           <div className="text-lg text-right -mt-8">
-              {branding.name}
+              {brandingInfo.name}
           </div>
           <div className="bg-white/90 p-8 text-gray-800 mt-4">
               <div className="flex justify-between text-sm">
@@ -119,7 +102,7 @@ export function GinyardTemplate({ data, themeColor }: InvoiceTemplateProps) {
               <div className="mt-5 text-sm">
                   <strong>Payment Detail:</strong><br/>
                   Central Bank<br/>
-                  Account Name: {branding.name}<br/>
+                  Account Name: {brandingInfo.name}<br/>
                   Account Number: 1234567890
               </div>
 

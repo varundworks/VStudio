@@ -1,14 +1,9 @@
+
 'use client';
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-
-interface InvoiceTemplateProps {
-    data: InvoiceFormValues;
-    themeColor: string;
-}
 
 interface BrandingInfo {
     name: string;
@@ -19,45 +14,33 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ClassicTemplate({ data, themeColor }: InvoiceTemplateProps) {
-  const [branding, setBranding] = useState<BrandingInfo | null>(null);
+interface ClassicTemplateProps {
+    data: InvoiceFormValues;
+    brandingInfo: BrandingInfo;
+}
 
-  useEffect(() => {
-    // Cannot access localStorage on the server, so we do it in useEffect.
-    const savedName = localStorage.getItem('vstudio-name') || 'Your Company';
-    const savedEmail = localStorage.getItem('vstudio-email') || 'your@email.com';
-    const savedLogo = localStorage.getItem('vstudio-logo') || 'https://placehold.co/80x80.png';
-    const savedPhone = localStorage.getItem('vstudio-phone') || '+999 123 456 789';
-    const savedWeb = localStorage.getItem('vstudio-web') || 'www.domain.com';
-    const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
-    setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
-  }, []);
-
+export function ClassicTemplate({ data, brandingInfo }: ClassicTemplateProps) {
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
-
-  if (!branding) {
-    // You can return a loading state or a default template here
-    return <div>Loading branding...</div>;
-  }
+  const themeColor = brandingInfo.themeColor || '#004E45';
 
   return (
     <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <header className="flex justify-between items-start pb-6 border-b-2" style={{borderColor: themeColor}}>
         <div>
            <Image
-              src={branding.logo}
+              src={brandingInfo.logo}
               alt="Company Logo"
               width={80}
               height={80}
               className="rounded-lg object-cover mb-4"
               data-ai-hint="logo company"
             />
-          <h1 className="text-2xl font-bold" style={{color: themeColor}}>{branding.name}</h1>
+          <h1 className="text-2xl font-bold" style={{color: themeColor}}>{brandingInfo.name}</h1>
           <div className="text-xs text-gray-500 mt-1">
-            <p>{branding.area}</p>
-            <p>{branding.email} | {branding.phone} | {branding.web}</p>
+            <p>{brandingInfo.area}</p>
+            <p>{brandingInfo.email} | {brandingInfo.phone} | {brandingInfo.web}</p>
           </div>
         </div>
         <div className="text-right">
@@ -121,7 +104,7 @@ export function ClassicTemplate({ data, themeColor }: InvoiceTemplateProps) {
 
       <footer className="mt-16 text-center text-xs text-gray-500 border-t pt-4">
         <p>Thank you for your business!</p>
-        <p className="mt-1">{branding.name} | {branding.email} | {branding.web}</p>
+        <p className="mt-1">{brandingInfo.name} | {brandingInfo.email} | {brandingInfo.web}</p>
       </footer>
     </div>
   );

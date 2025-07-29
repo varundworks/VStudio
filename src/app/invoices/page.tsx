@@ -11,6 +11,7 @@ import { FilePlus, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import type { InvoiceFormValues } from '@/components/invoice-form';
 import { format } from 'date-fns';
+import { useAuth } from '@/contexts/auth-context';
 
 interface StoredInvoice extends InvoiceFormValues {
   id: string;
@@ -19,13 +20,24 @@ interface StoredInvoice extends InvoiceFormValues {
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<StoredInvoice[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const storedInvoices = localStorage.getItem('vstudio-invoices');
-    if (storedInvoices) {
-      setInvoices(JSON.parse(storedInvoices));
+    if (user) {
+      const storedInvoices = localStorage.getItem(`vstudio-invoices-${user.uid}`);
+      if (storedInvoices) {
+        setInvoices(JSON.parse(storedInvoices));
+      }
     }
-  }, []);
+  }, [user]);
+
+  const deleteInvoice = (invoiceId: string) => {
+    const updatedInvoices = invoices.filter(inv => inv.id !== invoiceId);
+    setInvoices(updatedInvoices);
+    if(user) {
+        localStorage.setItem(`vstudio-invoices-${user.uid}`, JSON.stringify(updatedInvoices));
+    }
+  }
 
   return (
     <AppLayout>
@@ -60,7 +72,7 @@ export default function InvoicesPage() {
                   <TableRow key={invoice.id}>
                     <TableCell className="font-medium">{invoice.id}</TableCell>
                     <TableCell>{invoice.clientName}</TableCell>
-                    <TableCell>{format(new Date(invoice.invoiceDate), 'yyyy-MM-dd')}</TableCell>
+                    <TableCell>{invoice.invoiceDate ? format(new Date(invoice.invoiceDate), 'yyyy-MM-dd') : 'N/A'}</TableCell>
                     <TableCell className="text-right">${invoice.total.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -73,7 +85,7 @@ export default function InvoicesPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem>View</DropdownMenuItem>
                           <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => deleteInvoice(invoice.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

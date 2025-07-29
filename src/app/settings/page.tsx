@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,71 +12,118 @@ import { Upload } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useAuth } from '@/contexts/auth-context';
+import { db, storage } from '@/lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+
+interface SettingsData {
+    logo: string;
+    name: string;
+    email: string;
+    phone: string;
+    web: string;
+    area: string;
+    template: string;
+    themeColor: string;
+}
 
 export default function SettingsPage() {
-  const [logo, setLogo] = useState('https://placehold.co/80x80.png');
-  const [name, setName] = useState('User');
-  const [email, setEmail] = useState('user@example.com');
-  const [phone, setPhone] = useState('+999 123 456 789');
-  const [web, setWeb] = useState('www.domain.com');
-  const [area, setArea] = useState('123 Street, Town, Postal');
-  const [template, setTemplate] = useState('classic');
-  const [themeColor, setThemeColor] = useState('#F39C12');
+  const { user } = useAuth();
   const { toast } = useToast();
 
+  const [logo, setLogo] = useState('https://placehold.co/80x80.png');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [web, setWeb] = useState('');
+  const [area, setArea] = useState('');
+  const [template, setTemplate] = useState('classic');
+  const [themeColor, setThemeColor] = useState('#F39C12');
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
-    const savedName = localStorage.getItem('vstudio-name');
-    const savedEmail = localStorage.getItem('vstudio-email');
-    const savedLogo = localStorage.getItem('vstudio-logo');
-    const savedPhone = localStorage.getItem('vstudio-phone');
-    const savedWeb = localStorage.getItem('vstudio-web');
-    const savedArea = localStorage.getItem('vstudio-area');
-    const savedTemplate = localStorage.getItem('vstudio-template');
-    const savedThemeColor = localStorage.getItem('vstudio-theme-color');
+    if (user) {
+      const fetchSettings = async () => {
+        const settingsDocRef = doc(db, 'settings', user.uid);
+        const docSnap = await getDoc(settingsDocRef);
 
-    if (savedName) setName(savedName);
-    if (savedEmail) setEmail(savedEmail);
-    if (savedLogo) setLogo(savedLogo);
-    if (savedPhone) setPhone(savedPhone);
-    if (savedWeb) setWeb(savedWeb);
-    if (savedArea) setArea(savedArea);
-    if (savedTemplate) setTemplate(savedTemplate);
-    if (savedThemeColor) setThemeColor(savedThemeColor);
-  }, []);
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setLogo(event.target.result as string);
+        if (docSnap.exists()) {
+          const settings = docSnap.data() as SettingsData;
+          setName(settings.name || '');
+          setEmail(settings.email || '');
+          setLogo(settings.logo || 'https://placehold.co/80x80.png');
+          setPhone(settings.phone || '');
+          setWeb(settings.web || '');
+          setArea(settings.area || '');
+          setTemplate(settings.template || 'classic');
+          setThemeColor(settings.themeColor || '#F39C12');
+        } else {
+            // Set name from auth if available and settings are new
+            setName(user.displayName || '');
+            setEmail(user.email || '');
         }
       };
-      reader.readAsDataURL(e.target.files[0]);
+      fetchSettings();
+    }
+  }, [user]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) return;
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        if (event.target?.result) {
+          const dataUrl = event.target.result as string;
+          setLogo(dataUrl); // Show preview immediately
+
+          setIsUploading(true);
+          try {
+            const storageRef = ref(storage, `logos/${user.uid}/${file.name}`);
+            const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            setLogo(downloadURL); // Update with final URL
+            toast({ title: 'Logo uploaded successfully!' });
+          } catch (error) {
+            console.error("Error uploading logo:", error);
+            toast({ variant: 'destructive', title: 'Logo Upload Failed' });
+          } finally {
+            setIsUploading(false);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'You must be logged in to save settings.' });
+        return;
+    }
+    setIsSaving(true);
     try {
-      localStorage.setItem('vstudio-name', name);
-      localStorage.setItem('vstudio-email', email);
-      localStorage.setItem('vstudio-logo', logo);
-      localStorage.setItem('vstudio-phone', phone);
-      localStorage.setItem('vstudio-web', web);
-      localStorage.setItem('vstudio-area', area);
-      localStorage.setItem('vstudio-template', template);
-      localStorage.setItem('vstudio-theme-color', themeColor);
+      const settingsDocRef = doc(db, 'settings', user.uid);
+      const settingsData: SettingsData = {
+        name, email, logo, phone, web, area, template, themeColor
+      };
+      await setDoc(settingsDocRef, settingsData, { merge: true });
       toast({
         title: 'Settings Saved!',
-        description: 'Your branding and account information have been updated.',
+        description: 'Your information has been updated.',
       });
     } catch (error) {
-       console.error("Failed to save settings to localStorage", error);
+       console.error("Failed to save settings to Firestore", error);
        toast({
          variant: 'destructive',
          title: 'Error saving settings',
-         description: 'Could not save settings. Your browser might be blocking local storage.',
+         description: 'Could not save settings. Please try again.',
        });
+    } finally {
+        setIsSaving(false);
     }
   };
 
@@ -95,7 +143,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-6">
              <div>
                 <Label>Template</Label>
-                <RadioGroup value={template} onValueChange={setTemplate} className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-4">
+                <RadioGroup value={template} onValueChange={setTemplate} className="mt-2 grid grid-cols-2 gap-4">
                   <Label className="border rounded-md p-2 flex flex-col items-center gap-2 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                     <RadioGroupItem value="classic" id="classic"/>
                     <div className="border rounded-md p-2 w-full aspect-[1/1.41] bg-white overflow-hidden">
@@ -183,7 +231,7 @@ export default function SettingsPage() {
                           <div className="h-1 w-full bg-gray-300"></div>
                           <div className="h-1 w-full bg-gray-300"></div>
                         </div>
-                      </div>
+                       </div>
                        <div className="flex justify-end mt-1 px-1">
                         <div className="w-1/4 h-2 rounded-sm" style={{backgroundColor: themeColor}}></div>
                        </div>
@@ -239,9 +287,9 @@ export default function SettingsPage() {
               <div className="flex-1">
                 <Label htmlFor="logo-upload">Company Logo</Label>
                 <div className="flex gap-2 mt-2">
-                  <Input id="logo-upload" type="file" className="flex-1" onChange={handleLogoUpload} accept="image/*" />
-                   <Button variant="outline" onClick={() => document.getElementById('logo-upload')?.click()}>
-                    <Upload className="mr-2 h-4 w-4" /> Upload
+                  <Input id="logo-upload" type="file" className="flex-1" onChange={handleLogoUpload} accept="image/*" disabled={isUploading}/>
+                   <Button variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} disabled={isUploading}>
+                    <Upload className="mr-2 h-4 w-4" /> {isUploading ? 'Uploading...' : 'Upload'}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">Recommended size: 200x200px. Max file size: 2MB.</p>
@@ -280,7 +328,9 @@ export default function SettingsPage() {
         </Card>
 
          <div className="flex justify-end">
-            <Button onClick={handleSaveChanges}>Save Changes</Button>
+            <Button onClick={handleSaveChanges} disabled={isSaving || isUploading}>
+                {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
          </div>
       </div>
     </AppLayout>
