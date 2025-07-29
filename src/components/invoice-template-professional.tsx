@@ -52,8 +52,8 @@ export function ProfessionalTemplate({ data, clients, themeColor }: InvoiceTempl
   }
 
   return (
-    <div className="bg-white text-gray-900 font-sans p-10 text-sm shadow-lg max-w-4xl mx-auto border border-gray-200 rounded-lg">
-      <div style={headerStyle} className="color-white p-5 rounded-t-lg flex justify-between items-center text-white">
+    <div className="bg-white text-gray-900 font-sans p-8 text-sm">
+      <div style={headerStyle} className="color-white p-5 flex justify-between items-center text-white">
         <div className="text-3xl font-bold">INVOICE</div>
         <div className="text-base">NO: INV-12345-1</div>
       </div>

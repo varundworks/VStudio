@@ -46,7 +46,7 @@ export function ModernTemplate({ data, clients, themeColor }: InvoiceTemplatePro
   }
 
   return (
-    <div className="bg-white text-gray-800 font-sans p-10 text-sm shadow-lg max-w-4xl mx-auto">
+    <div className="bg-white text-gray-800 font-sans p-8 text-sm">
       <div className="grid grid-cols-3 gap-10">
         <div className="col-span-2">
            <Image

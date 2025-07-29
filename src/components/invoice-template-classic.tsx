@@ -46,7 +46,7 @@ export function ClassicTemplate({ data, clients, themeColor }: InvoiceTemplatePr
   }
 
   return (
-    <div className="bg-white text-gray-900 font-sans p-10 text-sm shadow-lg max-w-4xl mx-auto border border-gray-200 rounded-lg">
+    <div className="bg-white text-gray-900 font-sans p-8 text-sm">
       <header className="flex justify-between items-start pb-6 border-b-2" style={{borderColor: themeColor}}>
         <div>
            <Image

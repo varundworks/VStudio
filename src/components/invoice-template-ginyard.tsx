@@ -64,12 +64,12 @@ export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplatePr
   };
 
   return (
-      <div style={{backgroundColor: themeColor, backgroundImage: `repeating-linear-gradient(45deg, ${lightenColor(themeColor, -25)}, ${lightenColor(themeColor, -25)} 20px, ${themeColor} 20px, ${themeColor} 40px)`}} className="text-white font-sans p-10 rounded-2xl shadow-lg max-w-4xl mx-auto">
+      <div style={{backgroundColor: themeColor, backgroundImage: `repeating-linear-gradient(45deg, ${lightenColor(themeColor, -25)}, ${lightenColor(themeColor, -25)} 20px, ${themeColor} 20px, ${themeColor} 40px)`}} className="text-white font-sans p-8">
           <h1 className="text-4xl font-bold mb-1">INVOICE</h1>
           <div className="text-lg text-right -mt-8">
               {branding.name}
           </div>
-          <div className="bg-white/90 p-8 rounded-xl text-gray-800 mt-4">
+          <div className="bg-white/90 p-8 text-gray-800 mt-4">
               <div className="flex justify-between text-sm">
                   <div>
                       <p><strong>Invoice Date:</strong> {data.invoiceDate ? format(data.invoiceDate, 'dd/MM/yyyy') : 'N/A'}</p>
@@ -133,4 +133,3 @@ export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplatePr
       </div>
   );
 }
-
