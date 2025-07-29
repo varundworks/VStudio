@@ -15,16 +15,16 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 
 const mockClients = [
-  { id: 1, name: 'Acme Inc.', email: 'contact@acme.com', address: '123 Business Rd, Suite 100, Business City, 12345' },
-  { id: 2, name: 'Stark Industries', email: 'tony@stark.com', address: '10880 Malibu Point, 90265, CA' },
-  { id: 3, name: 'Wayne Enterprises', email: 'bruce@wayne.com', address: '1007 Mountain Drive, Gotham City' },
-  { id: 4, name: 'Cyberdyne Systems', email: 'info@cyberdyne.com', address: '2144 Kramer St., Los Angeles, CA' },
+  { id: 1, name: 'Acme Inc.', email: 'contact@acme.com', address: '123 Business Rd, Suite 100, Business City, 12345', phone: '123-456-7890' },
+  { id: 2, name: 'Stark Industries', email: 'tony@stark.com', address: '10880 Malibu Point, 90265, CA', phone: '212-970-4133' },
+  { id: 3, name: 'Wayne Enterprises', email: 'bruce@wayne.com', address: '1007 Mountain Drive, Gotham City', phone: '555-228-626' },
+  { id: 4, name: 'Cyberdyne Systems', email: 'info@cyberdyne.com', address: '2144 Kramer St., Los Angeles, CA', phone: '800-555-0199' },
 ];
 
 export default function ClientsPage() {
   const [clients, setClients] = useState(mockClients);
   const [open, setOpen] = useState(false);
-  const [editingClient, setEditingClient] = useState<typeof mockClients[0] | null>(null);
+  const [editingClient, setEditingClient] = useState<(typeof mockClients[0]) | null>(null);
   const { toast } = useToast();
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -41,6 +41,7 @@ export default function ClientsPage() {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       address: formData.get('address') as string,
+      phone: formData.get('phone') as string,
     };
 
     if (editingClient) {
@@ -102,6 +103,10 @@ export default function ClientsPage() {
                   <Label htmlFor="address" className="text-right">Address</Label>
                   <Input id="address" name="address" className="col-span-3" defaultValue={editingClient?.address} required />
                 </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="phone" className="text-right">Phone</Label>
+                  <Input id="phone" name="phone" className="col-span-3" defaultValue={editingClient?.phone} required />
+                </div>
               </div>
               <DialogFooter>
                 <Button type="submit">Save client</Button>
@@ -119,6 +124,7 @@ export default function ClientsPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Address</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead><span className="sr-only">Actions</span></TableHead>
               </TableRow>
             </TableHeader>
@@ -128,6 +134,7 @@ export default function ClientsPage() {
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.address}</TableCell>
+                  <TableCell>{client.phone}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

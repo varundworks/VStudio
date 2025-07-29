@@ -42,9 +42,9 @@ const invoiceSchema = z.object({
 export type InvoiceFormValues = z.infer<typeof invoiceSchema>;
 
 const mockClients = [
-    { id: '1', name: 'Acme Inc.', address: '123 Business Rd, Suite 100, Business City, 12345', email: 'contact@acme.com' },
-    { id: '2', name: 'Stark Industries', address: '10880 Malibu Point, 90265, CA', email: 'tony@stark.com' },
-    { id: '3', name: 'Wayne Enterprises', address: '1007 Mountain Drive, Gotham City', email: 'bruce@wayne.com' },
+    { id: '1', name: 'Acme Inc.', address: '123 Business Rd, Suite 100, Business City, 12345', email: 'contact@acme.com', phone: '123-456-7890' },
+    { id: '2', name: 'Stark Industries', address: '10880 Malibu Point, 90265, CA', email: 'tony@stark.com', phone: '212-970-4133' },
+    { id: '3', name: 'Wayne Enterprises', address: '1007 Mountain Drive, Gotham City', email: 'bruce@wayne.com', phone: '555-228-626' },
 ];
 
 function AIDescriptionDialog({ onGenerate }: { onGenerate: (description: string) => void }) {

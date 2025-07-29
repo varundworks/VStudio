@@ -7,13 +7,16 @@ import { useEffect, useState } from 'react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
-    clients: { id: string; name: string; address: string; email: string; }[];
+    clients: { id: string; name: string; address: string; email: string; phone: string; }[];
 }
 
 interface BrandingInfo {
     name: string;
     email: string;
     logo: string;
+    phone: string;
+    web: string;
+    area: string;
 }
 
 export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
@@ -24,7 +27,10 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
     const savedName = localStorage.getItem('vstudio-name') || 'Your Company';
     const savedEmail = localStorage.getItem('vstudio-email') || 'your@email.com';
     const savedLogo = localStorage.getItem('vstudio-logo') || 'https://placehold.co/80x80.png';
-    setBranding({ name: savedName, email: savedEmail, logo: savedLogo });
+    const savedPhone = localStorage.getItem('vstudio-phone') || '+999 123 456 789';
+    const savedWeb = localStorage.getItem('vstudio-web') || 'www.domain.com';
+    const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
+    setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
   }, []);
 
   const client = clients.find(c => c.id === data.clientId);
@@ -51,10 +57,10 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
               data-ai-hint="logo company"
             />
           <div className="text-xs text-gray-600 space-y-1">
-            <p><strong>Phone:</strong> +999 123 456 789</p>
+            <p><strong>Phone:</strong> {branding.phone}</p>
             <p><strong>Email:</strong> {branding.email}</p>
-            <p><strong>Web:</strong> www.domain.com</p>
-            <p><strong>Area:</strong> 123 Street, Town, Postal</p>
+            <p><strong>Web:</strong> {branding.web}</p>
+            <p><strong>Area:</strong> {branding.area}</p>
           </div>
         </div>
         <div className="text-right space-y-1">
@@ -62,7 +68,7 @@ export function InvoiceTemplate({ data, clients }: InvoiceTemplateProps) {
           <p className="font-semibold">{client?.name}</p>
           <p className="text-xs">{client?.address}</p>
           <p className="text-xs">{client?.email}</p>
-          <p className="text-xs">+000 0000 000</p>
+          <p className="text-xs">{client?.phone}</p>
         </div>
       </div>
       <div className="mt-8 mb-4 text-right text-sm text-gray-600 space-y-1">
