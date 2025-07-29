@@ -96,6 +96,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 </Link>
               </SidebarMenuItem>
                <SidebarMenuItem>
+                <Link href="/clients">
+                  <SidebarMenuButton tooltip="Clients">
+                    <Users />
+                    <span>Clients</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
                 <Link href="/settings">
                   <SidebarMenuButton tooltip="Settings">
                     <Settings />

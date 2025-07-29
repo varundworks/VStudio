@@ -12,6 +12,7 @@ interface BrandingInfo {
     phone: string;
     web: string;
     area: string;
+    themeColor: string;
 }
 
 interface ModernTemplateProps {
@@ -23,7 +24,7 @@ export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
-  const themeColor = brandingInfo.themeColor || '#004E45';
+  const themeColor = brandingInfo.themeColor || '#000000';
 
   return (
     <div className="bg-white text-gray-800 font-sans p-8 text-sm w-full h-full">

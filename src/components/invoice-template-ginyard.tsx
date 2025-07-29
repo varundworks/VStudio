@@ -11,6 +11,7 @@ interface BrandingInfo {
     phone: string;
     web: string;
     area: string;
+    themeColor: string;
 }
 
 interface GinyardTemplateProps {
