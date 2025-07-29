@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
-    clients: { id: string; name: string; address: string; email: string; phone: string; }[];
     themeColor: string;
 }
 
@@ -20,7 +19,7 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ClassicTemplate({ data, clients, themeColor }: InvoiceTemplateProps) {
+export function ClassicTemplate({ data, themeColor }: InvoiceTemplateProps) {
   const [branding, setBranding] = useState<BrandingInfo | null>(null);
 
   useEffect(() => {
@@ -34,8 +33,6 @@ export function ClassicTemplate({ data, clients, themeColor }: InvoiceTemplatePr
     setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
   }, []);
 
-  const client = clients.find(c => c.id === data.clientId);
-
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
@@ -46,7 +43,7 @@ export function ClassicTemplate({ data, clients, themeColor }: InvoiceTemplatePr
   }
 
   return (
-    <div className="bg-white text-gray-900 font-sans p-8 text-sm">
+    <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <header className="flex justify-between items-start pb-6 border-b-2" style={{borderColor: themeColor}}>
         <div>
            <Image
@@ -75,10 +72,9 @@ export function ClassicTemplate({ data, clients, themeColor }: InvoiceTemplatePr
         <div>
           <h3 className="font-semibold text-gray-600 uppercase text-xs tracking-wider mb-2">Bill To</h3>
           <div className="text-sm">
-            <p className="font-bold">{client?.name}</p>
-            <p className="text-gray-600">{client?.address}</p>
-            <p className="text-gray-600">{client?.email}</p>
-            <p className="text-gray-600">{client?.phone}</p>
+            <p className="font-bold">{data.clientName}</p>
+            {data.clientAddress && <p className="text-gray-600">{data.clientAddress}</p>}
+            {data.clientPhone && <p className="text-gray-600">{data.clientPhone}</p>}
           </div>
         </div>
       </section>

@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
-    clients: { id: string; name: string; address: string; email: string; phone: string; }[];
     themeColor: string;
 }
 
@@ -20,7 +19,7 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ModernTemplate({ data, clients, themeColor }: InvoiceTemplateProps) {
+export function ModernTemplate({ data, themeColor }: InvoiceTemplateProps) {
   const [branding, setBranding] = useState<BrandingInfo | null>(null);
 
   useEffect(() => {
@@ -34,8 +33,6 @@ export function ModernTemplate({ data, clients, themeColor }: InvoiceTemplatePro
     setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
   }, []);
 
-  const client = clients.find(c => c.id === data.clientId);
-
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
   const total = subtotal + taxAmount;
@@ -46,7 +43,7 @@ export function ModernTemplate({ data, clients, themeColor }: InvoiceTemplatePro
   }
 
   return (
-    <div className="bg-white text-gray-800 font-sans p-8 text-sm">
+    <div className="bg-white text-gray-800 font-sans p-8 text-sm w-full h-full">
       <div className="grid grid-cols-3 gap-10">
         <div className="col-span-2">
            <Image
@@ -70,8 +67,8 @@ export function ModernTemplate({ data, clients, themeColor }: InvoiceTemplatePro
       <div className="grid grid-cols-3 gap-10 mt-12">
         <div>
           <p className="text-gray-500 text-sm">Bill to</p>
-          <h3 className="text-md font-bold mt-1">{client?.name}</h3>
-          <p className="text-xs text-gray-600 mt-1">{client?.address}</p>
+          <h3 className="text-md font-bold mt-1">{data.clientName}</h3>
+          {data.clientAddress && <p className="text-xs text-gray-600 mt-1">{data.clientAddress}</p>}
         </div>
         <div>
           <p className="text-gray-500 text-sm">Sent on</p>

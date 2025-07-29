@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
-    clients: { id: string; name: string; address: string; email: string; phone: string; }[];
     themeColor: string;
 }
 
@@ -35,7 +34,7 @@ function lightenColor(hex: string, percent: number) {
 }
 
 
-export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplateProps) {
+export function GinyardTemplate({ data, themeColor }: InvoiceTemplateProps) {
   const [branding, setBranding] = useState<BrandingInfo | null>(null);
 
   useEffect(() => {
@@ -48,8 +47,6 @@ export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplatePr
     const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
     setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
   }, []);
-
-  const client = clients.find(c => c.id === data.clientId);
 
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
@@ -64,7 +61,7 @@ export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplatePr
   };
 
   return (
-      <div style={{backgroundColor: themeColor, backgroundImage: `repeating-linear-gradient(45deg, ${lightenColor(themeColor, -25)}, ${lightenColor(themeColor, -25)} 20px, ${themeColor} 20px, ${themeColor} 40px)`}} className="text-white font-sans p-8">
+      <div style={{backgroundColor: themeColor, backgroundImage: `repeating-linear-gradient(45deg, ${lightenColor(themeColor, -25)}, ${lightenColor(themeColor, -25)} 20px, ${themeColor} 20px, ${themeColor} 40px)`}} className="text-white font-sans p-8 w-full h-full">
           <h1 className="text-4xl font-bold mb-1">INVOICE</h1>
           <div className="text-lg text-right -mt-8">
               {branding.name}
@@ -74,10 +71,10 @@ export function GinyardTemplate({ data, clients, themeColor }: InvoiceTemplatePr
                   <div>
                       <p><strong>Invoice Date:</strong> {data.invoiceDate ? format(data.invoiceDate, 'dd/MM/yyyy') : 'N/A'}</p>
                       <p><strong>Due Date:</strong> {data.dueDate ? format(data.dueDate, 'dd/MM/yyyy') : 'N/A'}</p>
-                      <p className="mt-2"><strong>Invoice To:</strong><br/>{client?.name}<br/>{client?.phone}</p>
+                      <p className="mt-2"><strong>Invoice To:</strong><br/>{data.clientName}<br/>{data.clientPhone}</p>
                   </div>
                   <div>
-                      <p><strong>Ship To:</strong><br/>{client?.name}<br/>{client?.address}</p>
+                      <p><strong>Ship To:</strong><br/>{data.clientName}<br/>{data.clientAddress}</p>
                   </div>
               </div>
 

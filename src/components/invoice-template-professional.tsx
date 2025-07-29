@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 
 interface InvoiceTemplateProps {
     data: InvoiceFormValues;
-    clients: { id: string; name: string; address: string; email: string; phone: string; }[];
     themeColor: string;
 }
 
@@ -19,7 +18,7 @@ interface BrandingInfo {
     area: string;
 }
 
-export function ProfessionalTemplate({ data, clients, themeColor }: InvoiceTemplateProps) {
+export function ProfessionalTemplate({ data, themeColor }: InvoiceTemplateProps) {
   const [branding, setBranding] = useState<BrandingInfo | null>(null);
 
   useEffect(() => {
@@ -32,8 +31,6 @@ export function ProfessionalTemplate({ data, clients, themeColor }: InvoiceTempl
     const savedArea = localStorage.getItem('vstudio-area') || '123 Street, Town, Postal';
     setBranding({ name: savedName, email: savedEmail, logo: savedLogo, phone: savedPhone, web: savedWeb, area: savedArea });
   }, []);
-
-  const client = clients.find(c => c.id === data.clientId);
 
   const subtotal = (data.items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const taxAmount = subtotal * ((Number(data.tax) || 0) / 100);
@@ -52,7 +49,7 @@ export function ProfessionalTemplate({ data, clients, themeColor }: InvoiceTempl
   }
 
   return (
-    <div className="bg-white text-gray-900 font-sans p-8 text-sm">
+    <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <div style={headerStyle} className="color-white p-5 flex justify-between items-center text-white">
         <div className="text-3xl font-bold">INVOICE</div>
         <div className="text-base">NO: INV-12345-1</div>
@@ -61,9 +58,9 @@ export function ProfessionalTemplate({ data, clients, themeColor }: InvoiceTempl
       <div className="flex justify-between mt-5">
         <div className="w-[45%]">
           <p className="font-bold">Bill To:</p>
-          <p>{client?.name}</p>
-          <p>{client?.phone}</p>
-          <p>{client?.address}</p>
+          <p>{data.clientName}</p>
+          {data.clientPhone && <p>{data.clientPhone}</p>}
+          {data.clientAddress && <p>{data.clientAddress}</p>}
         </div>
         <div className="w-[45%]">
           <p className="font-bold">From:</p>

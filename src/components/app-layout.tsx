@@ -88,14 +88,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/clients">
-                  <SidebarMenuButton tooltip="Clients">
-                    <Users />
-                    <span>Clients</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
                 <Link href="/invoices/new">
                   <SidebarMenuButton tooltip="New Invoice">
                     <FilePlus />
@@ -103,9 +95,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-            </SidebarMenu>
-            <SidebarMenu>
-              <SidebarMenuItem>
+               <SidebarMenuItem>
                 <Link href="/settings">
                   <SidebarMenuButton tooltip="Settings">
                     <Settings />
@@ -113,6 +103,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
+            </SidebarMenu>
+            <SidebarMenu>
+              {/* User settings can be moved here if needed */}
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>

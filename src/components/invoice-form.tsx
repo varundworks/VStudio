@@ -6,7 +6,6 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from './ui/separator';
 import { Trash2, PlusCircle, FileDown, Send, Eye, X } from 'lucide-react';
@@ -23,7 +22,9 @@ import html2canvas from 'html2canvas';
 import { InvoiceTemplate } from './invoice-template';
 
 const invoiceSchema = z.object({
-  clientId: z.string().min(1, 'Client is required.'),
+  clientName: z.string().min(1, 'Client name is required.'),
+  clientPhone: z.string().optional(),
+  clientAddress: z.string().optional(),
   invoiceDate: z.date(),
   dueDate: z.date(),
   items: z.array(
@@ -37,12 +38,6 @@ const invoiceSchema = z.object({
 });
 
 export type InvoiceFormValues = z.infer<typeof invoiceSchema>;
-
-const mockClients = [
-    { id: '1', name: 'Acme Inc.', address: '123 Business Rd, Suite 100, Business City, 12345', email: 'contact@acme.com', phone: '123-456-7890' },
-    { id: '2', name: 'Stark Industries', address: '10880 Malibu Point, 90265, CA', email: 'tony@stark.com', phone: '212-970-4133' },
-    { id: '3', name: 'Wayne Enterprises', address: '1007 Mountain Drive, Gotham City', email: 'bruce@wayne.com', phone: '555-228-626' },
-];
 
 export function InvoiceForm() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -60,7 +55,9 @@ export function InvoiceForm() {
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
-      clientId: '',
+      clientName: '',
+      clientPhone: '',
+      clientAddress: '',
       invoiceDate: new Date(),
       dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
       items: [{ description: '', quantity: 1, rate: 0 }],
@@ -125,7 +122,7 @@ export function InvoiceForm() {
     const root = createRoot(invoiceElement);
     root.render(
         <div className="w-[210mm] h-[297mm]">
-            <InvoiceTemplate data={data} clients={mockClients} template={template} themeColor={themeColor}/>
+            <InvoiceTemplate data={data} template={template} themeColor={themeColor}/>
         </div>
     );
     
@@ -165,7 +162,7 @@ export function InvoiceForm() {
                 <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             <div className="overflow-auto h-full border rounded-md">
-              <InvoiceTemplate data={form.getValues()} clients={mockClients} template={template} themeColor={themeColor}/>
+              <InvoiceTemplate data={form.getValues()} template={template} themeColor={themeColor}/>
             </div>
         </DialogContent>
       </Dialog>
@@ -173,89 +170,107 @@ export function InvoiceForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-4">
+                <h2 className="font-semibold">Client Information</h2>
                 <FormField
                     control={form.control}
-                    name="clientId"
+                    name="clientName"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="font-semibold">Client</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a client" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {mockClients.map(client => (
-                                        <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="Client's full name" />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
-                <div>
-                    <FormLabel className="font-semibold">Dates</FormLabel>
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                        <FormField
-                            control={form.control}
-                            name="invoiceDate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                        <FormControl>
-                                            <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
-                                            >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            </Button>
-                                        </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="dueDate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                        <FormControl>
-                                            <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
-                                            >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            </Button>
-                                        </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+                 <FormField
+                    control={form.control}
+                    name="clientPhone"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Phone (Optional)</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="Client's phone number" />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="clientAddress"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Address (Optional)</FormLabel>
+                            <FormControl>
+                                <Textarea {...field} placeholder="Client's mailing address" />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            
+            <div className="space-y-4">
+                <h2 className="font-semibold">Dates</h2>
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="invoiceDate"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
+                                        >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick invoice date</span>}
+                                        </Button>
+                                    </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="dueDate"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
+                                        >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick due date</span>}
+                                        </Button>
+                                    </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
             </div>
 
