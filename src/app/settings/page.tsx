@@ -75,12 +75,13 @@ export default function SettingsPage() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
+      
+      setIsUploading(true);
       reader.onload = async (event) => {
         if (event.target?.result) {
           const dataUrl = event.target.result as string;
           setLogo(dataUrl); // Show preview immediately
 
-          setIsUploading(true);
           try {
             const storageRef = ref(storage, `logos/${user.uid}/${file.name}`);
             const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
@@ -89,6 +90,7 @@ export default function SettingsPage() {
             toast({ title: 'Logo uploaded successfully!' });
           } catch (error) {
             console.error("Error uploading logo:", error);
+            setLogo('https://placehold.co/80x80.png'); // Revert on error
             toast({ variant: 'destructive', title: 'Logo Upload Failed' });
           } finally {
             setIsUploading(false);
@@ -285,12 +287,15 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex-1">
-                <Label htmlFor="logo-upload">Company Logo</Label>
+                <Label>Company Logo</Label>
                 <div className="flex gap-2 mt-2">
-                  <Input id="logo-upload" type="file" className="flex-1" onChange={handleLogoUpload} accept="image/*" disabled={isUploading}/>
-                   <Button variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} disabled={isUploading}>
-                    <Upload className="mr-2 h-4 w-4" /> {isUploading ? 'Uploading...' : 'Upload'}
-                  </Button>
+                    <Label htmlFor="logo-upload" className="flex-1">
+                      <div className="w-full h-10 px-3 py-2 text-sm border rounded-md cursor-pointer flex items-center justify-center bg-background hover:bg-accent hover:text-accent-foreground">
+                        <Upload className="mr-2 h-4 w-4" />
+                        <span>{isUploading ? 'Uploading...' : 'Upload Image'}</span>
+                      </div>
+                      <Input id="logo-upload" type="file" className="sr-only" onChange={handleLogoUpload} accept="image/*" disabled={isUploading}/>
+                   </Label>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">Recommended size: 200x200px. Max file size: 2MB.</p>
               </div>
