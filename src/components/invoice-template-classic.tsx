@@ -3,6 +3,7 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
+import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
@@ -11,6 +12,7 @@ interface BrandingInfo {
     web: string;
     area: string;
     themeColor: string;
+    logoUrl?: string;
 }
 
 interface ClassicTemplateProps {
@@ -27,11 +29,18 @@ export function ClassicTemplate({ data, brandingInfo }: ClassicTemplateProps) {
   return (
     <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <header className="flex justify-between items-start pb-6 border-b-2" style={{borderColor: themeColor}}>
-        <div>
-          <h1 className="text-2xl font-bold" style={{color: themeColor}}>{brandingInfo.name}</h1>
-          <div className="text-xs text-gray-500 mt-1">
-            <p>{brandingInfo.area}</p>
-            <p>{brandingInfo.email} | {brandingInfo.phone} | {brandingInfo.web}</p>
+        <div className="flex items-center gap-4">
+          {brandingInfo.logoUrl && (
+            <div className="w-24 h-24 relative">
+                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold" style={{color: themeColor}}>{brandingInfo.name}</h1>
+            <div className="text-xs text-gray-500 mt-1">
+                <p>{brandingInfo.area}</p>
+                <p>{brandingInfo.email} | {brandingInfo.phone} | {brandingInfo.web}</p>
+            </div>
           </div>
         </div>
         <div className="text-right">

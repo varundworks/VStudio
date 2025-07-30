@@ -80,26 +80,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </SidebarHeader>
             <SidebarMenu className="flex-1">
               <SidebarMenuItem>
-                <Link href="/invoices">
-                  <SidebarMenuButton tooltip="Invoices">
-                    <FileText />
-                    <span>Invoices</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
                 <Link href="/invoices/new">
                   <SidebarMenuButton tooltip="New Invoice">
                     <FilePlus />
                     <span>New Invoice</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <Link href="/clients">
-                  <SidebarMenuButton tooltip="Clients">
-                    <Users />
-                    <span>Clients</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

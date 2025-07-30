@@ -3,6 +3,7 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
+import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
@@ -11,6 +12,7 @@ interface BrandingInfo {
     web: string;
     area: string;
     themeColor: string;
+    logoUrl?: string;
 }
 
 interface ModernTemplateProps {
@@ -27,10 +29,17 @@ export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
   return (
     <div className="bg-white text-gray-800 font-sans p-8 text-sm w-full h-full">
       <div className="grid grid-cols-3 gap-10">
-        <div className="col-span-2">
-          <p className="text-gray-500">From</p>
-          <h2 className="text-lg font-bold text-gray-900 mt-1">{brandingInfo.name}</h2>
-          <p className="text-xs text-gray-600 mt-1">{brandingInfo.area}</p>
+        <div className="col-span-2 flex items-center gap-4">
+          {brandingInfo.logoUrl && (
+            <div className="w-20 h-20 relative">
+                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+            </div>
+          )}
+          <div>
+            <p className="text-gray-500">From</p>
+            <h2 className="text-lg font-bold text-gray-900 mt-1">{brandingInfo.name}</h2>
+            <p className="text-xs text-gray-600 mt-1">{brandingInfo.area}</p>
+          </div>
         </div>
         <div className="text-right">
           <h1 className="text-3xl font-bold" style={{color: themeColor}}>INVOICE</h1>

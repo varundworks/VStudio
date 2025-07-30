@@ -3,6 +3,7 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
+import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
@@ -11,6 +12,7 @@ interface BrandingInfo {
     web: string;
     area: string;
     themeColor: string;
+    logoUrl?: string;
 }
 
 interface GinyardTemplateProps {
@@ -52,9 +54,18 @@ export function GinyardTemplate({ data, brandingInfo }: GinyardTemplateProps) {
 
   return (
       <div style={mainBgStyle} className="text-white font-sans p-8 w-full h-full">
-          <h1 className="text-4xl font-bold mb-1">INVOICE</h1>
-          <div className="text-lg text-right -mt-8 text-white/90">
-              {brandingInfo.name}
+          <div className="flex justify-between items-center">
+            {brandingInfo.logoUrl && (
+              <div className="w-20 h-20 relative">
+                  <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-4xl font-bold mb-1 text-right">INVOICE</h1>
+              <div className="text-lg text-right text-white/90">
+                  {brandingInfo.name}
+              </div>
+            </div>
           </div>
           <div className="bg-white/90 p-8 text-gray-800 mt-4 rounded-lg">
               <div className="flex justify-between text-sm">

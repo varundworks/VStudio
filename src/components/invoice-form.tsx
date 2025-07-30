@@ -51,9 +51,15 @@ interface BrandingInfo {
     area: string;
     template: string;
     themeColor: string;
+    logoUrl?: string;
 }
 
-export function InvoiceForm() {
+interface InvoiceFormProps {
+    logoUrl: string | null;
+}
+
+
+export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [brandingInfo, setBrandingInfo] = useState<BrandingInfo | null>(null);
@@ -82,6 +88,13 @@ export function InvoiceForm() {
         fetchSettings();
     }
   }, [user]);
+  
+  // Update branding info when a new logo is uploaded
+  useEffect(() => {
+    if (logoUrl && brandingInfo) {
+      setBrandingInfo(prev => prev ? { ...prev, logoUrl } : null);
+    }
+  }, [logoUrl, brandingInfo]);
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
@@ -121,6 +134,7 @@ export function InvoiceForm() {
         ...data,
         id: `INV-${String(storedInvoices.length + 1).padStart(3, '0')}`,
         total: total,
+        logoUrl: logoUrl,
       };
 
       storedInvoices.push(newInvoice);
@@ -176,7 +190,7 @@ export function InvoiceForm() {
     const root = createRoot(invoiceElement);
     root.render(
         <div className="w-[210mm] h-[297mm]">
-            <InvoiceTemplate data={data} brandingInfo={brandingInfo} />
+            <InvoiceTemplate data={data} brandingInfo={{...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl}} />
         </div>
     );
     
@@ -216,7 +230,7 @@ export function InvoiceForm() {
                 <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             <div className="overflow-auto h-full border rounded-md">
-              {brandingInfo && <InvoiceTemplate data={form.getValues()} brandingInfo={brandingInfo}/>}
+              {brandingInfo && <InvoiceTemplate data={form.getValues()} brandingInfo={{...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl}}/>}
             </div>
         </DialogContent>
       </Dialog>

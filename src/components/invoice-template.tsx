@@ -15,6 +15,7 @@ interface BrandingInfo {
     area: string;
     template: string;
     themeColor: string;
+    logoUrl?: string;
 }
 
 interface InvoiceTemplateProps {
