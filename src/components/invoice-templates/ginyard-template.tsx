@@ -5,22 +5,26 @@ import type { Invoice } from '@/app/invoices/new/page';
 
 interface GinyardTemplateProps {
   invoice: Invoice;
-  accentColor: string; // Keep prop for consistency, though unused in this specific design
+  accentColor: string;
+  secondaryColor: string;
 }
 
-export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
+export function GinyardTemplate({ invoice, accentColor, secondaryColor }: GinyardTemplateProps) {
   const { company, client, items, total, subtotal, tax } = invoice;
 
   return (
-    <div className="bg-[#002d4c] text-white font-sans text-sm rounded-lg overflow-hidden flex flex-col min-h-full">
+    <div
+      className="text-white font-sans text-sm rounded-lg overflow-hidden flex flex-col min-h-full"
+      style={{ backgroundColor: secondaryColor }}
+    >
       <header className="p-8">
         <div className="flex items-center gap-4">
           {invoice.logoUrl && (
             <Image
               src={invoice.logoUrl}
               alt="Company Logo"
-              width={60}
-              height={60}
+              width={80}
+              height={80}
               className="object-contain rounded-md"
             />
           )}
@@ -42,9 +46,9 @@ export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
       </div>
 
       <div className="px-8 py-4">
-        <div className="bg-[#001c32] rounded-lg overflow-hidden">
+        <div className="bg-black bg-opacity-20 rounded-lg overflow-hidden">
           <table className="w-full text-left">
-            <thead className="bg-[#004d7a]">
+            <thead style={{ backgroundColor: accentColor }}>
               <tr>
                 <th className="p-3 text-left font-bold">DESCRIPTION</th>
                 <th className="p-3 text-center font-bold">QTY</th>
@@ -54,7 +58,7 @@ export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
             </thead>
             <tbody>
               {items.map(item => (
-                <tr key={item.id} className="border-b border-[#004d7a]">
+                <tr key={item.id} className="border-b" style={{ borderColor: accentColor }}>
                   <td className="p-3 text-left">{item.description}</td>
                   <td className="p-3 text-center">{item.quantity}</td>
                   <td className="p-3 text-right">{formatCurrency(item.rate)}</td>
@@ -68,15 +72,15 @@ export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
       
       <div className="flex justify-end px-8 py-4">
           <div className="w-full max-w-xs text-xs space-y-2">
-            <div className="flex justify-between p-2 rounded-md bg-[#001c32]">
+            <div className="flex justify-between p-2 rounded-md bg-black bg-opacity-20">
               <span>Subtotal</span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
-            <div className="flex justify-between p-2 rounded-md bg-[#001c32]">
+            <div className="flex justify-between p-2 rounded-md bg-black bg-opacity-20">
               <span>Tax ({tax}%)</span>
               <span>{formatCurrency(subtotal * (tax / 100))}</span>
             </div>
-            <div className="flex justify-between p-2 font-bold text-base rounded-md bg-[#001c32]">
+            <div className="flex justify-between p-2 font-bold text-base rounded-md bg-black bg-opacity-20">
               <span>Amount Due</span>
               <span>{formatCurrency(total)}</span>
             </div>
