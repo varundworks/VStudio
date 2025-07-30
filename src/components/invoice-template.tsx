@@ -10,7 +10,6 @@ import type { InvoiceFormValues } from './invoice-form';
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;

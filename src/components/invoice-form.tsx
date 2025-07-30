@@ -46,7 +46,6 @@ export type InvoiceFormValues = z.infer<typeof invoiceSchema>;
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;
@@ -72,7 +71,6 @@ export function InvoiceForm() {
                  setBrandingInfo({
                     name: 'Your Company',
                     email: 'your@email.com',
-                    logo: 'https://placehold.co/80x80.png',
                     phone: '',
                     web: '',
                     area: '',

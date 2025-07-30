@@ -3,12 +3,10 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;
@@ -37,15 +35,6 @@ export function ProfessionalTemplate({ data, brandingInfo }: ProfessionalTemplat
     <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <div style={headerStyle} className="color-white p-5 flex justify-between items-center text-white">
         <div className="flex items-center gap-4">
-            <Image
-              src={brandingInfo.logo}
-              alt="Company Logo"
-              width={40}
-              height={40}
-              className="object-contain"
-              data-ai-hint="logo company"
-              unoptimized
-            />
             <div className="text-3xl font-bold">INVOICE</div>
         </div>
         <div className="text-base">NO: INV-12345-1</div>

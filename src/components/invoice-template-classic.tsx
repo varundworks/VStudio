@@ -3,12 +3,10 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;
@@ -30,15 +28,6 @@ export function ClassicTemplate({ data, brandingInfo }: ClassicTemplateProps) {
     <div className="bg-white text-gray-900 font-sans p-8 text-sm w-full h-full">
       <header className="flex justify-between items-start pb-6 border-b-2" style={{borderColor: themeColor}}>
         <div>
-           <Image
-              src={brandingInfo.logo}
-              alt="Company Logo"
-              width={80}
-              height={80}
-              className="rounded-lg object-cover mb-4"
-              data-ai-hint="logo company"
-              unoptimized
-            />
           <h1 className="text-2xl font-bold" style={{color: themeColor}}>{brandingInfo.name}</h1>
           <div className="text-xs text-gray-500 mt-1">
             <p>{brandingInfo.area}</p>

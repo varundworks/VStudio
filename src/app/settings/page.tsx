@@ -8,16 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAuth } from '@/contexts/auth-context';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface SettingsData {
-    logo: string;
     name: string;
     email: string;
     phone: string;
@@ -31,7 +28,6 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [logo, setLogo] = useState('https://placehold.co/80x80.png');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -41,8 +37,6 @@ export default function SettingsPage() {
   const [themeColor, setThemeColor] = useState('#F39C12');
 
   const [isSaving, setIsSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -55,7 +49,6 @@ export default function SettingsPage() {
           const settings = docSnap.data() as SettingsData;
           setName(settings.name || '');
           setEmail(settings.email || '');
-          setLogo(settings.logo || 'https://placehold.co/80x80.png');
           setPhone(settings.phone || '');
           setWeb(settings.web || '');
           setArea(settings.area || '');
@@ -71,26 +64,6 @@ export default function SettingsPage() {
     }
   }, [user]);
 
-  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !user) return;
-
-    setIsUploading(true);
-
-    try {
-        const storageRef = ref(storage, `logos/${user.uid}/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-        setLogo(downloadURL);
-        toast({ title: 'Logo uploaded successfully!' });
-    } catch (error) {
-        console.error("Error uploading file:", error);
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not upload your logo. Please try again.' });
-    } finally {
-        setIsUploading(false);
-    }
-};
-
   const handleSaveChanges = async () => {
     if (!user) {
         toast({ variant: 'destructive', title: 'You must be logged in to save settings.' });
@@ -99,8 +72,8 @@ export default function SettingsPage() {
     setIsSaving(true);
     try {
       const settingsDocRef = doc(db, 'settings', user.uid);
-      const settingsData: SettingsData = {
-        name, email, logo, phone, web, area, template, themeColor
+      const settingsData: Omit<SettingsData, 'logo'> = {
+        name, email, phone, web, area, template, themeColor
       };
       await setDoc(settingsDocRef, settingsData, { merge: true });
       toast({
@@ -258,46 +231,6 @@ export default function SettingsPage() {
               </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Branding</CardTitle>
-            <CardDescription>Customize the look of your invoices.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-6">
-              <div className="shrink-0">
-                <Image
-                  src={logo}
-                  alt="Current Logo"
-                  width={80}
-                  height={80}
-                  className="rounded-lg object-cover"
-                  data-ai-hint="logo company"
-                  unoptimized
-                />
-              </div>
-              <div className="flex-1 space-y-2">
-                 <Label
-                    htmlFor="logo-upload"
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 cursor-pointer"
-                  >
-                    {isUploading ? 'Uploading...' : 'Choose File'}
-                 </Label>
-                <input
-                    id="logo-upload"
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                    accept="image/*"
-                    disabled={isUploading}
-                />
-                <p className="text-xs text-muted-foreground">Select a new logo for your company.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
         
         <Card>
           <CardHeader>
@@ -329,7 +262,7 @@ export default function SettingsPage() {
         </Card>
 
          <div className="flex justify-end">
-            <Button onClick={handleSaveChanges} disabled={isSaving || isUploading}>
+            <Button onClick={handleSaveChanges} disabled={isSaving}>
                 {isSaving ? 'Saving...' : 'Save Changes'}
             </Button>
          </div>

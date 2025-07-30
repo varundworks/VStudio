@@ -3,12 +3,10 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;
@@ -30,15 +28,6 @@ export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
     <div className="bg-white text-gray-800 font-sans p-8 text-sm w-full h-full">
       <div className="grid grid-cols-3 gap-10">
         <div className="col-span-2">
-           <Image
-              src={brandingInfo.logo}
-              alt="Company Logo"
-              width={60}
-              height={60}
-              className="object-contain mb-4"
-              data-ai-hint="logo company"
-              unoptimized
-            />
           <p className="text-gray-500">From</p>
           <h2 className="text-lg font-bold text-gray-900 mt-1">{brandingInfo.name}</h2>
           <p className="text-xs text-gray-600 mt-1">{brandingInfo.area}</p>

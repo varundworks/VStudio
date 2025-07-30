@@ -3,12 +3,10 @@
 
 import { format } from 'date-fns';
 import type { InvoiceFormValues } from './invoice-form';
-import Image from 'next/image';
 
 interface BrandingInfo {
     name: string;
     email: string;
-    logo: string;
     phone: string;
     web: string;
     area: string;
@@ -54,15 +52,6 @@ export function GinyardTemplate({ data, brandingInfo }: GinyardTemplateProps) {
 
   return (
       <div style={mainBgStyle} className="text-white font-sans p-8 w-full h-full">
-          <Image
-              src={brandingInfo.logo}
-              alt="Company Logo"
-              width={60}
-              height={60}
-              className="object-contain mb-4"
-              data-ai-hint="logo company"
-              unoptimized
-            />
           <h1 className="text-4xl font-bold mb-1">INVOICE</h1>
           <div className="text-lg text-right -mt-8 text-white/90">
               {brandingInfo.name}
