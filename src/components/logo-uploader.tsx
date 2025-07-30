@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import { ImagePlus, Loader2 } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
 
 interface LogoUploaderProps {
   onLogoUpload: (url: string) => void;
@@ -86,14 +86,7 @@ export function LogoUploader({ onLogoUpload }: LogoUploaderProps) {
           disabled={isUploading}
         />
         <Button onClick={handleChooseFileClick} disabled={isUploading}>
-          {isUploading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Uploading...
-            </>
-          ) : (
-            'Choose File'
-          )}
+          {isUploading ? 'Uploading...' : 'Choose File'}
         </Button>
       </CardContent>
     </Card>
