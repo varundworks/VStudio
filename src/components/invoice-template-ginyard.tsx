@@ -57,7 +57,7 @@ export function GinyardTemplate({ data, brandingInfo }: GinyardTemplateProps) {
           <div className="flex justify-between items-center">
             {brandingInfo.logoUrl && (
               <div className="w-20 h-20 relative">
-                  <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+                  <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" unoptimized/>
               </div>
             )}
             <div>
@@ -131,3 +131,5 @@ export function GinyardTemplate({ data, brandingInfo }: GinyardTemplateProps) {
       </div>
   );
 }
+
+    

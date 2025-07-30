@@ -147,7 +147,7 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
     }
   }
   
-  const getBrandingInfoWithLogo = () => {
+  const getBrandingInfoWithLogo = (): BrandingInfo | null => {
     if (!brandingInfo) return null;
     return { ...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl };
   };
@@ -188,22 +188,29 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
     const { createRoot } = await import('react-dom/client');
     const root = createRoot(invoiceElement);
     root.render(
-        <div className="w-[210mm] h-[297mm]">
+        <div className="w-[210mm]">
             <InvoiceTemplate data={data} brandingInfo={finalBrandingInfo} />
         </div>
     );
     
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait for images to load before generating PDF
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     try {
-        const canvas = await html2canvas(invoiceElement.firstChild as HTMLElement, { scale: 2 });
+        const canvas = await html2canvas(invoiceElement.firstChild as HTMLElement, { 
+            scale: 2,
+            useCORS: true, // Important for external images
+        });
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
+        const imgProperties = pdf.getImageProperties(imgData);
+        const imgWidth = imgProperties.width;
+        const imgHeight = imgProperties.height;
+
         const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * ratio, imgHeight * ratio);
         pdf.save(`invoice-${new Date().toISOString().split('T')[0]}.pdf`);
     } catch (error) {
@@ -452,3 +459,5 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
     </>
   );
 }
+
+    

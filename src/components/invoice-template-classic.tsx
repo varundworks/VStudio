@@ -32,7 +32,7 @@ export function ClassicTemplate({ data, brandingInfo }: ClassicTemplateProps) {
         <div className="flex items-center gap-4">
           {brandingInfo.logoUrl && (
             <div className="w-24 h-24 relative">
-                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" unoptimized/>
             </div>
           )}
           <div>
@@ -109,3 +109,5 @@ export function ClassicTemplate({ data, brandingInfo }: ClassicTemplateProps) {
     </div>
   );
 }
+
+    

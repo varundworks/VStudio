@@ -39,7 +39,7 @@ export function ProfessionalTemplate({ data, brandingInfo }: ProfessionalTemplat
         <div className="flex items-center gap-4">
             {brandingInfo.logoUrl && (
               <div className="w-16 h-16 relative">
-                  <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+                  <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" unoptimized />
               </div>
             )}
             <div className="text-3xl font-bold">INVOICE</div>
@@ -123,3 +123,5 @@ export function ProfessionalTemplate({ data, brandingInfo }: ProfessionalTemplat
     </div>
   );
 }
+
+    

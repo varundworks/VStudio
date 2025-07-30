@@ -32,7 +32,7 @@ export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
         <div className="col-span-2 flex items-center gap-4">
           {brandingInfo.logoUrl && (
             <div className="w-20 h-20 relative">
-                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" />
+                <Image src={brandingInfo.logoUrl} alt={`${brandingInfo.name} Logo`} layout="fill" objectFit="contain" unoptimized />
             </div>
           )}
           <div>
@@ -111,3 +111,5 @@ export function ModernTemplate({ data, brandingInfo }: ModernTemplateProps) {
     </div>
   );
 }
+
+    
