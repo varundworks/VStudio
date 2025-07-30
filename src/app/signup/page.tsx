@@ -24,7 +24,7 @@ export default function SignupPage() {
     try {
       await signup(email, password);
       toast({ title: 'Account Created!', description: 'You have been successfully signed up.' });
-      router.push('/invoices');
+      router.push('/invoices/new');
     } catch (error) {
       console.error(error);
       const firebaseError = error as FirebaseError;

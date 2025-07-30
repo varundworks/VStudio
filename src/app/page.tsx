@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast({ title: 'Login Successful', description: 'Welcome back!' });
-      router.push('/invoices');
+      router.push('/invoices/new');
     } catch (error) {
       console.error(error);
       const firebaseError = error as FirebaseError;
