@@ -88,13 +88,6 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
         fetchSettings();
     }
   }, [user]);
-  
-  // Update branding info when a new logo is uploaded
-  useEffect(() => {
-    if (logoUrl && brandingInfo) {
-      setBrandingInfo(prev => prev ? { ...prev, logoUrl } : null);
-    }
-  }, [logoUrl, brandingInfo]);
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
@@ -153,6 +146,11 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
       });
     }
   }
+  
+  const getBrandingInfoWithLogo = () => {
+    if (!brandingInfo) return null;
+    return { ...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl };
+  };
 
   const validateAndGetData = async () => {
     const isValid = await form.trigger();
@@ -176,7 +174,8 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
 
   const handleGeneratePDF = async () => {
     const data = await validateAndGetData();
-    if (!data || !brandingInfo) return;
+    const finalBrandingInfo = getBrandingInfoWithLogo();
+    if (!data || !finalBrandingInfo) return;
     
     setIsGeneratingPDF(true);
     const invoiceElement = document.createElement('div');
@@ -190,7 +189,7 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
     const root = createRoot(invoiceElement);
     root.render(
         <div className="w-[210mm] h-[297mm]">
-            <InvoiceTemplate data={data} brandingInfo={{...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl}} />
+            <InvoiceTemplate data={data} brandingInfo={finalBrandingInfo} />
         </div>
     );
     
@@ -230,7 +229,7 @@ export function InvoiceForm({ logoUrl }: InvoiceFormProps) {
                 <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             <div className="overflow-auto h-full border rounded-md">
-              {brandingInfo && <InvoiceTemplate data={form.getValues()} brandingInfo={{...brandingInfo, logoUrl: logoUrl || brandingInfo.logoUrl}}/>}
+              {brandingInfo && <InvoiceTemplate data={form.getValues()} brandingInfo={getBrandingInfoWithLogo()!}/>}
             </div>
         </DialogContent>
       </Dialog>
