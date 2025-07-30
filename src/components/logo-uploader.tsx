@@ -17,7 +17,6 @@ interface LogoUploaderProps {
 export function LogoUploader({ onLogoUpload }: LogoUploaderProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [isUploading, setIsUploading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -30,8 +29,8 @@ export function LogoUploader({ onLogoUpload }: LogoUploaderProps) {
       return;
     }
 
-    setIsUploading(true);
-    setLogoPreview(URL.createObjectURL(file));
+    const tempPreviewUrl = URL.createObjectURL(file);
+    setLogoPreview(tempPreviewUrl);
 
     try {
       const filePath = `logos/${user.uid}/${Date.now()}_${file.name}`;
@@ -50,8 +49,6 @@ export function LogoUploader({ onLogoUpload }: LogoUploaderProps) {
       console.error('Error uploading logo:', error);
       toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not upload your logo. Please try again.' });
       setLogoPreview(null); // Clear preview on failure
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -83,10 +80,9 @@ export function LogoUploader({ onLogoUpload }: LogoUploaderProps) {
           onChange={handleLogoUpload}
           accept="image/png, image/jpeg, image/gif"
           className="hidden"
-          disabled={isUploading}
         />
-        <Button onClick={handleChooseFileClick} disabled={isUploading}>
-          {isUploading ? 'Uploading...' : 'Choose File'}
+        <Button onClick={handleChooseFileClick}>
+          Choose File
         </Button>
       </CardContent>
     </Card>
