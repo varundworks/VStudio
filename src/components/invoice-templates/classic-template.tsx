@@ -15,7 +15,7 @@ export function ClassicTemplate({ invoice, accentColor }: ClassicTemplateProps) 
     <div className="bg-white p-8 text-black font-serif text-sm">
       <header className="flex justify-between items-start mb-10 border-b-2 pb-4" style={{ borderColor: accentColor }}>
         <div>
-          {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={150} height={150} className="object-contain" />}
+          {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
           <h1 className="text-4xl font-bold mt-4" style={{ color: accentColor }}>INVOICE</h1>
           <p className="text-gray-500">Invoice #: {invoice.invoiceNumber}</p>
         </div>

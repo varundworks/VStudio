@@ -1,4 +1,3 @@
-
 'use client';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
@@ -12,12 +11,10 @@ interface ModernTemplateProps {
 export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
   const { company, client, items, total, subtotal, tax } = invoice;
 
-  // A dark blue as a secondary color for the gradient, as in the example
   const secondaryColor = '#0b1f44';
 
   return (
     <div className="bg-white text-black font-sans text-sm flex flex-col min-h-full">
-      {/* Header with wave effect */}
       <div
         className="relative text-white h-[180px] w-full"
         style={{
@@ -30,15 +27,14 @@ export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
           <Image
             src={invoice.logoUrl}
             alt="Company Logo"
-            width={60}
-            height={60}
+            width={80}
+            height={80}
             className="object-contain absolute top-5 left-8"
           />
         )}
         <h1 className="absolute top-5 right-8 text-3xl font-bold">INVOICE</h1>
       </div>
 
-      {/* Main content area */}
       <div className="p-8 flex-1">
         <div className="flex justify-between items-start mb-8">
           <div>
@@ -60,7 +56,6 @@ export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
           </div>
         </div>
 
-        {/* Items Table */}
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr style={{ backgroundColor: accentColor, color: 'white' }}>
@@ -82,7 +77,6 @@ export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
           </tbody>
         </table>
 
-        {/* Totals Section */}
         <div className="mt-5 flex justify-end">
           <div className="w-[300px]">
             <table className="w-full">
@@ -92,8 +86,8 @@ export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
                   <td className="p-2 text-right">{formatCurrency(subtotal)}</td>
                 </tr>
                 <tr>
-                  <td className="p-2 text-left">TAX</td>
-                  <td className="p-2 text-right">{tax}%</td>
+                  <td className="p-2 text-left">TAX ({tax}%)</td>
+                  <td className="p-2 text-right">{formatCurrency(subtotal * (tax / 100))}</td>
                 </tr>
                 <tr>
                   <td className="p-2 text-left font-bold">TOTAL</td>
@@ -107,7 +101,6 @@ export function ModernTemplate({ invoice, accentColor }: ModernTemplateProps) {
         <div className="mt-16 text-right font-bold">SIGNATURE</div>
       </div>
 
-      {/* Footer */}
       <div
         className="text-white p-4 text-xs mt-auto flex justify-between items-center"
         style={{ backgroundColor: secondaryColor, borderTop: `5px solid ${accentColor}` }}

@@ -18,7 +18,7 @@ export function GinyardTemplate({ invoice, accentColor }: GinyardTemplateProps) 
                 <h1 className="text-3xl font-bold">{company.name}</h1>
                 <p className="text-gray-500">{company.address}</p>
             </div>
-            {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={100} height={100} className="object-contain" />}
+            {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
         </div>
         
         <div style={{ backgroundColor: accentColor }} className="text-white p-4 my-8 flex justify-between items-center">
