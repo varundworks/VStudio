@@ -8,10 +8,11 @@ interface CvsTemplateProps {
 }
 
 export function CvsTemplate({ invoice }: CvsTemplateProps) {
-  const { client, items, total, subtotal, tax } = invoice;
+  const { client, items, total, subtotal, tax, type } = invoice;
   const cvsBlue = '#003366';
   const cvsOrange = '#FF6600';
   const cvsGreen = '#339933';
+  const docTitle = type === 'quotation' ? 'Quotation' : 'Invoice';
 
   return (
     <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-full relative">
@@ -68,8 +69,8 @@ export function CvsTemplate({ invoice }: CvsTemplateProps) {
                   <p>{client.phone}</p>
               </div>
               <div className="text-right">
-                  <h3 className="font-bold mb-2 text-gray-500">DETAILS</h3>
-                  <p><span className="font-bold">Invoice #:</span> {invoice.invoiceNumber}</p>
+                  <h3 className="font-bold mb-2 text-gray-500 text-xl uppercase">{docTitle}</h3>
+                  <p><span className="font-bold">{docTitle} #:</span> {invoice.invoiceNumber}</p>
                   <p><span className="font-bold">Date of Issue:</span> {invoice.invoiceDate}</p>
                   <p><span className="font-bold">Due Date:</span> {invoice.dueDate}</p>
               </div>

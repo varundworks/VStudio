@@ -10,7 +10,8 @@ interface GinyardTemplateProps {
 }
 
 export function GinyardTemplate({ invoice, accentColor, secondaryColor }: GinyardTemplateProps) {
-  const { company, client, items, total, subtotal, tax } = invoice;
+  const { company, client, items, total, subtotal, tax, type } = invoice;
+  const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
 
   return (
     <div
@@ -40,7 +41,7 @@ export function GinyardTemplate({ invoice, accentColor, secondaryColor }: Ginyar
           <p>{client.phone}</p>
         </div>
         <div className="text-right text-xs">
-          <p><span className="font-bold">INVOICE NO:</span> {invoice.invoiceNumber}</p>
+          <p><span className="font-bold">{docTitle} NO:</span> {invoice.invoiceNumber}</p>
           <p>{invoice.invoiceDate}</p>
         </div>
       </div>

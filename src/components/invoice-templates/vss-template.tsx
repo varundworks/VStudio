@@ -8,9 +8,10 @@ interface VssTemplateProps {
 }
 
 export function VssTemplate({ invoice }: VssTemplateProps) {
-  const { company, client, items, total, subtotal, tax } = invoice;
+  const { company, client, items, total, subtotal, tax, type } = invoice;
   const vssBlue = '#002D62';
   const vssRed = '#E60000';
+  const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
 
   return (
     <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-full relative">
@@ -67,8 +68,8 @@ export function VssTemplate({ invoice }: VssTemplateProps) {
                         <p>{client.phone}</p>
                     </div>
                     <div className="text-right">
-                        <h2 className="text-2xl font-bold" style={{ color: vssBlue }}>INVOICE</h2>
-                        <p><span className="font-bold">Invoice #:</span> {invoice.invoiceNumber}</p>
+                        <h2 className="text-2xl font-bold uppercase" style={{ color: vssBlue }}>{docTitle}</h2>
+                        <p><span className="font-bold">{docTitle} #:</span> {invoice.invoiceNumber}</p>
                         <p><span className="font-bold">Date:</span> {invoice.invoiceDate}</p>
                         <p><span className="font-bold">Due Date:</span> {invoice.dueDate}</p>
                     </div>

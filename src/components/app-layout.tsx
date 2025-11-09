@@ -1,17 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, FileText, Settings } from 'lucide-react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { Home, FileText, Settings, FileSignature } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const type = searchParams.get('type');
 
   const navLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/invoices/new', label: 'New Invoice', icon: FileText },
-    { href: '/settings', label: 'Settings', icon: Settings },
+    { href: '/dashboard', label: 'Dashboard', icon: Home, exact: true },
+    { href: '/invoices/new?type=invoice', label: 'New Invoice', icon: FileText, type: 'invoice' },
+    { href: '/invoices/new?type=quotation', label: 'New Quotation', icon: FileSignature, type: 'quotation' },
+    { href: '/settings', label: 'Settings', icon: Settings, exact: true },
   ];
 
   return (
@@ -39,7 +42,54 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <nav>
           <ul>
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              let isActive = false;
+              if(link.exact) {
+                isActive = pathname === link.href;
+              } else if (link.type) {
+                isActive = pathname === '/invoices/new' && type === link.type;
+              } else {
+                 isActive = pathname.startsWith(link.href);
+              }
+              
+              if(link.href === '/invoices/new?type=quotation') return null;
+              if(link.href === '/invoices/new?type=invoice' && pathname === '/invoices/new' && type === 'quotation') {
+                  // Don't render the 'New Invoice' link when we are on the 'New Quotation' page
+              }
+
+              const displayLabel = pathname === '/invoices/new'
+                ? (type === 'quotation' ? 'New Quotation' : 'New Invoice')
+                : link.label;
+
+              const displayIcon = pathname === '/invoices/new'
+                ? (type === 'quotation' ? FileSignature : FileText)
+                : link.icon;
+              
+              const currentLink = pathname === '/invoices/new'
+                ? `/invoices/new?type=${type || 'invoice'}`
+                : link.href;
+
+              if(link.label === "New Quotation") return null;
+              if(link.label === "New Invoice") {
+                 const active = pathname === '/invoices/new';
+                 return (
+                    <li key={link.href}>
+                      <Link
+                        href={currentLink}
+                        className={cn(
+                          'flex items-center gap-3 rounded-md px-3 py-2 transition-colors',
+                          active
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        )}
+                      >
+                        <displayIcon className="w-5 h-5" />
+                        <span>{displayLabel}</span>
+                      </Link>
+                    </li>
+                 )
+              }
+
+
               return (
                 <li key={link.href}>
                   <Link

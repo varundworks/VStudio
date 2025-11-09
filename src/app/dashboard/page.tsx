@@ -10,23 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, FileText, FileSignature } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
-
-// Define the structure of an invoice draft
-interface InvoiceDraft {
-  id: string;
-  invoiceNumber: string;
-  client: {
-    name: string;
-  };
-  total: number;
-}
+import type { Invoice } from '@/app/invoices/new/page';
 
 export default function DashboardPage() {
-  const [drafts, setDrafts] = useState<InvoiceDraft[]>([]);
+  const [drafts, setDrafts] = useState<Invoice[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -46,7 +37,9 @@ export default function DashboardPage() {
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/invoices/new?draftId=${id}`);
+    const draft = drafts.find(d => d.id === id);
+    const type = draft?.type || 'invoice';
+    router.push(`/invoices/new?type=${type}&draftId=${id}`);
   };
 
   return (
@@ -55,30 +48,38 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="mt-2 text-muted-foreground">
-            Here are your saved invoice drafts.
+            Create a new document or manage your saved drafts.
           </p>
         </div>
-        <Link href="/invoices/new" passHref>
-          <Button className="flex items-center gap-2">
-            <PlusCircle className="w-5 h-5" />
-            <span>New Invoice</span>
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/invoices/new?type=invoice" passHref>
+            <Button className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              <span>New Invoice</span>
+            </Button>
+          </Link>
+          <Link href="/invoices/new?type=quotation" passHref>
+            <Button variant="secondary" className="flex items-center gap-2">
+              <FileSignature className="w-5 h-5" />
+              <span>New Quotation</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {drafts.length === 0 ? (
         <div className="text-center py-16 border-2 border-dashed rounded-lg">
           <p className="text-muted-foreground">You have no saved drafts.</p>
           <p className="text-sm text-muted-foreground mt-2">
-            Click "+ New Invoice" to get started.
+            Click "+ New Invoice" or "+ New Quotation" to get started.
           </p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {drafts.map((draft) => (
-            <Card key={draft.id}>
+             <Card key={draft.id}>
               <CardHeader>
-                <CardTitle>Invoice {draft.invoiceNumber}</CardTitle>
+                <CardTitle>{draft.type === 'quotation' ? 'Quotation' : 'Invoice'} {draft.invoiceNumber}</CardTitle>
                 <CardDescription>To: {draft.client.name}</CardDescription>
               </CardHeader>
               <CardContent>

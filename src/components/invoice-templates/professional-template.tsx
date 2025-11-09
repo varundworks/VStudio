@@ -6,19 +6,21 @@ import type { Invoice } from '@/app/invoices/new/page';
 interface ProfessionalTemplateProps {
   invoice: Invoice;
   accentColor: string;
+  secondaryColor: string;
 }
 
 export function ProfessionalTemplate({ invoice, accentColor }: ProfessionalTemplateProps) {
-  const { company, client, items, total, subtotal, tax } = invoice;
+  const { company, client, items, total, subtotal, tax, type } = invoice;
+  const docTitle = type === 'quotation' ? 'Quotation' : 'Invoice';
 
   return (
     <div className="bg-white p-8 text-black font-sans text-sm">
         <div className="grid grid-cols-2 gap-4 mb-8">
             <div>
-                {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
+                {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={200} height={200} className="object-contain" />}
             </div>
             <div className="text-right">
-                <h1 className="text-5xl font-extrabold uppercase" style={{ color: accentColor }}>Invoice</h1>
+                <h1 className="text-5xl font-extrabold uppercase" style={{ color: accentColor }}>{docTitle}</h1>
             </div>
         </div>
 
@@ -30,7 +32,7 @@ export function ProfessionalTemplate({ invoice, accentColor }: ProfessionalTempl
                 <p className="text-gray-600">{company.website}</p>
             </div>
             <div className="text-right">
-                <p><span className="font-bold">Invoice Number:</span> {invoice.invoiceNumber}</p>
+                <p><span className="font-bold">{docTitle} Number:</span> {invoice.invoiceNumber}</p>
                 <p><span className="font-bold">Date of Issue:</span> {invoice.invoiceDate}</p>
                 <p><span className="font-bold">Due Date:</span> {invoice.dueDate}</p>
             </div>

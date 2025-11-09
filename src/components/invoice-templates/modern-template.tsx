@@ -10,7 +10,8 @@ interface ModernTemplateProps {
 }
 
 export function ModernTemplate({ invoice, accentColor, secondaryColor }: ModernTemplateProps) {
-  const { company, client, items, total, subtotal, tax } = invoice;
+  const { company, client, items, total, subtotal, tax, type } = invoice;
+  const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
 
   return (
     <div className="bg-white text-black font-sans text-sm flex flex-col min-h-full">
@@ -23,13 +24,15 @@ export function ModernTemplate({ invoice, accentColor, secondaryColor }: ModernT
         }}
       >
         {invoice.logoUrl && (
-          <img
+          <Image
             src={invoice.logoUrl}
             alt="Company Logo"
-            className="object-contain absolute top-5 left-8 w-[120px] h-[120px]"
+            width={150}
+            height={150}
+            className="object-contain absolute top-5 left-8"
           />
         )}
-        <h1 className="absolute top-5 right-8 text-3xl font-bold">INVOICE</h1>
+        <h1 className="absolute top-5 right-8 text-3xl font-bold">{docTitle}</h1>
       </div>
 
       <div className="p-8 flex-1">
@@ -42,10 +45,10 @@ export function ModernTemplate({ invoice, accentColor, secondaryColor }: ModernT
           </div>
           <div className="text-right text-sm">
             <p>
-              <span className="font-semibold">Invoice No :</span> #{invoice.invoiceNumber}
+              <span className="font-semibold">{docTitle} No :</span> #{invoice.invoiceNumber}
             </p>
             <p>
-              <span className="font-semibold">Invoice Date :</span> {invoice.invoiceDate}
+              <span className="font-semibold">{docTitle} Date :</span> {invoice.invoiceDate}
             </p>
             <p>
               <span className="font-semibold">Due Date :</span> {invoice.dueDate}

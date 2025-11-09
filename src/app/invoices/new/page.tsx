@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { InvoiceForm } from '@/components/invoice-form';
 import { InvoicePreview } from '@/components/invoice-preview';
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 const initialInvoiceState = {
   id: '',
   invoiceNumber: '',
+  type: 'invoice' as 'invoice' | 'quotation',
   company: { name: '', email: '', phone: '', address: '', website: '' },
   client: { name: '', phone: '', address: '' },
   invoiceDate: new Date().toISOString().split('T')[0],
@@ -23,15 +24,20 @@ const initialInvoiceState = {
 
 export type Invoice = typeof initialInvoiceState;
 export type Template = 'classic' | 'modern' | 'professional' | 'ginyard' | 'vss' | 'cvs';
+export type DocumentType = 'invoice' | 'quotation';
 
-export default function NewInvoicePage() {
+function NewInvoicePageContents() {
   const [invoice, setInvoice] = useState<Invoice>(initialInvoiceState);
   const [template, setTemplate] = useState<Template>('classic');
   const [accentColor, setAccentColor] = useState('#F7931E');
   const [secondaryColor, setSecondaryColor] = useState('#0b1f44');
-
+  
   const searchParams = useSearchParams();
   const draftId = searchParams.get('draftId');
+  const docType = (searchParams.get('type') as DocumentType) || 'invoice';
+
+  const docTitle = docType === 'quotation' ? 'Quotation' : 'Invoice';
+  const docNumberPrefix = docType === 'quotation' ? 'QUO' : 'INV';
 
   useEffect(() => {
     if (draftId) {
@@ -48,10 +54,11 @@ export default function NewInvoicePage() {
     } else {
       // Load from settings for new invoices
       const savedSettings = JSON.parse(localStorage.getItem('company-settings') || '{}');
-      const newInvoiceNumber = `INV-${String(Date.now()).slice(-6)}`;
+      const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
       setInvoice({
         ...initialInvoiceState,
         id: uuidv4(),
+        type: docType,
         invoiceNumber: newInvoiceNumber,
         company: savedSettings.company || initialInvoiceState.company,
         logoUrl: savedSettings.logoUrl || '',
@@ -60,7 +67,7 @@ export default function NewInvoicePage() {
       setAccentColor(savedSettings.themeColor || '#F7931E');
       setSecondaryColor(savedSettings.themeSecondaryColor || '#0b1f44');
     }
-  }, [draftId]);
+  }, [draftId, docType, docNumberPrefix]);
 
   useEffect(() => {
     const subtotal = invoice.items.reduce(
@@ -94,10 +101,11 @@ export default function NewInvoicePage() {
   const handleClearForm = () => {
      // Load from settings for new invoices
      const savedSettings = JSON.parse(localStorage.getItem('company-settings') || '{}');
-     const newInvoiceNumber = `INV-${String(Date.now()).slice(-6)}`;
+     const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
      setInvoice({
        ...initialInvoiceState,
        id: uuidv4(),
+       type: docType,
        invoiceNumber: newInvoiceNumber,
        company: savedSettings.company || initialInvoiceState.company,
        logoUrl: savedSettings.logoUrl || '',
@@ -122,9 +130,9 @@ export default function NewInvoicePage() {
       </div>
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">New Invoice</h1>
+          <h1 className="text-3xl font-bold">New {docTitle}</h1>
           <p className="mt-2 text-muted-foreground">
-            Fill out the form below to create a new invoice.
+            Fill out the form below to create a new {docTitle.toLowerCase()}.
           </p>
         </div>
         <InvoiceForm
@@ -136,4 +144,12 @@ export default function NewInvoicePage() {
       </div>
     </div>
   );
+}
+
+export default function NewInvoicePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewInvoicePageContents />
+    </Suspense>
+  )
 }

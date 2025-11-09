@@ -6,18 +6,20 @@ import type { Invoice } from '@/app/invoices/new/page';
 interface ClassicTemplateProps {
   invoice: Invoice;
   accentColor: string;
+  secondaryColor: string;
 }
 
 export function ClassicTemplate({ invoice, accentColor }: ClassicTemplateProps) {
-  const { company, client, items, total, subtotal, tax } = invoice;
+  const { company, client, items, total, subtotal, tax, type } = invoice;
+  const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
 
   return (
     <div className="bg-white p-8 text-black font-serif text-sm">
       <header className="flex justify-between items-start mb-10 border-b-2 pb-4" style={{ borderColor: accentColor }}>
         <div>
           {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
-          <h1 className="text-4xl font-bold mt-4" style={{ color: accentColor }}>INVOICE</h1>
-          <p className="text-gray-500">Invoice #: {invoice.invoiceNumber}</p>
+          <h1 className="text-4xl font-bold mt-4" style={{ color: accentColor }}>{docTitle}</h1>
+          <p className="text-gray-500">{docTitle === 'INVOICE' ? 'Invoice' : 'Quotation'} #: {invoice.invoiceNumber}</p>
         </div>
         <div className="text-right">
           <h2 className="text-xl font-semibold">{company.name}</h2>
@@ -36,7 +38,7 @@ export function ClassicTemplate({ invoice, accentColor }: ClassicTemplateProps) 
           <p>{client.phone}</p>
         </div>
         <div className="text-right">
-          <p><span className="font-bold">Invoice Date:</span> {invoice.invoiceDate}</p>
+          <p><span className="font-bold">{docTitle === 'INVOICE' ? 'Invoice' : 'Quotation'} Date:</span> {invoice.invoiceDate}</p>
           <p><span className="font-bold">Due Date:</span> {invoice.dueDate}</p>
         </div>
       </section>

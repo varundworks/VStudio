@@ -107,10 +107,12 @@ export function InvoiceForm({
         const finalHeight = height > pdfHeight ? pdfHeight : height;
 
         pdf.addImage(imgData, 'PNG', 0, 0, width, finalHeight);
-        pdf.save(`invoice-${invoice.invoiceNumber || 'download'}.pdf`);
+        pdf.save(`${invoice.type}-${invoice.invoiceNumber || 'download'}.pdf`);
       });
     }
   };
+  
+  const docTitle = invoice.type === 'quotation' ? 'Quotation' : 'Invoice';
 
   return (
     <div className="space-y-8">
@@ -236,11 +238,11 @@ export function InvoiceForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Invoice Details</CardTitle>
+          <CardTitle>{docTitle} Details</CardTitle>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <Label>Invoice Number</Label>
+            <Label>{docTitle} Number</Label>
             <Input
               value={invoice.invoiceNumber}
               onChange={(e) =>
@@ -259,7 +261,7 @@ export function InvoiceForm({
             />
           </div>
           <div>
-            <Label>Invoice Date</Label>
+            <Label>{docTitle} Date</Label>
             <Input
               type="date"
               value={invoice.invoiceDate}
