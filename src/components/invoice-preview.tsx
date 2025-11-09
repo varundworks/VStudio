@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ChromePicker } from 'react-color';
 import { ClassicTemplate } from './invoice-templates/classic-template';
 import { ModernTemplate } from './invoice-templates/modern-template';
 import { ProfessionalTemplate } from './invoice-templates/professional-template';
@@ -18,6 +17,15 @@ import { GinyardTemplate } from './invoice-templates/ginyard-template';
 import { VssTemplate } from './invoice-templates/vss-template';
 import { CvsTemplate } from './invoice-templates/cvs-template';
 import type { Invoice, Template } from '@/app/invoices/new/page';
+import { useEffect, useState } from 'react';
+
+// Dynamically import the color picker to avoid SSR issues
+import dynamic from 'next/dynamic';
+const ChromePicker = dynamic(
+  () => import('react-color').then((mod) => mod.ChromePicker),
+  { ssr: false }
+);
+
 
 interface InvoicePreviewProps {
   invoice: Invoice;
@@ -48,6 +56,11 @@ export function InvoicePreview({
   onSecondaryColorChange,
 }: InvoicePreviewProps) {
   const SelectedTemplate = templates[template];
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <Card>
@@ -76,24 +89,28 @@ export function InvoicePreview({
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label>Accent Color</Label>
-              <ChromePicker
-                color={accentColor}
-                onChange={(color) => onAccentColorChange(color.hex)}
-                disableAlpha
-                className="!shadow-none"
-              />
-            </div>
-             <div>
-              <Label>Secondary Color</Label>
-              <ChromePicker
-                color={secondaryColor}
-                onChange={(color) => onSecondaryColorChange(color.hex)}
-                disableAlpha
-                className="!shadow-none"
-              />
-            </div>
+            {isClient && (
+              <>
+                <div>
+                  <Label>Accent Color</Label>
+                  <ChromePicker
+                    color={accentColor}
+                    onChange={(color) => onAccentColorChange(color.hex)}
+                    disableAlpha
+                    className="!shadow-none"
+                  />
+                </div>
+                <div>
+                  <Label>Secondary Color</Label>
+                  <ChromePicker
+                    color={secondaryColor}
+                    onChange={(color) => onSecondaryColorChange(color.hex)}
+                    disableAlpha
+                    className="!shadow-none"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>

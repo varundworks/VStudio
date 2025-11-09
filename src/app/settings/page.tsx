@@ -15,8 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ChromePicker } from 'react-color';
+
 import type { Template } from '@/app/invoices/new/page';
+
+// Dynamically import the color picker to avoid SSR issues
+import dynamic from 'next/dynamic';
+const ChromePicker = dynamic(
+  () => import('react-color').then((mod) => mod.ChromePicker),
+  { ssr: false }
+);
+
 
 interface CompanyInfo {
   name: string;
@@ -38,8 +46,10 @@ export default function SettingsPage() {
   const [themeColor, setThemeColor] = useState('#F7931E');
   const [themeSecondaryColor, setThemeSecondaryColor] = useState('#0b1f44');
   const [defaultTemplate, setDefaultTemplate] = useState<Template>('classic');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     // Load saved settings from localStorage on component mount
     const savedSettings = localStorage.getItem('company-settings');
     if (savedSettings) {
@@ -149,14 +159,18 @@ export default function SettingsPage() {
                </div>
            </div>
            <div className="space-y-2 grid grid-cols-2 gap-4">
-             <div>
-                <Label>Default Theme Color</Label>
-                <ChromePicker color={themeColor} onChange={(color) => setThemeColor(color.hex)} disableAlpha className="!shadow-none" />
-             </div>
-             <div>
-                <Label>Default Secondary Color</Label>
-                <ChromePicker color={themeSecondaryColor} onChange={(color) => setThemeSecondaryColor(color.hex)} disableAlpha className="!shadow-none" />
-             </div>
+            {isClient && (
+              <>
+                <div>
+                    <Label>Default Theme Color</Label>
+                    <ChromePicker color={themeColor} onChange={(color) => setThemeColor(color.hex)} disableAlpha className="!shadow-none" />
+                </div>
+                <div>
+                    <Label>Default Secondary Color</Label>
+                    <ChromePicker color={themeSecondaryColor} onChange={(color) => setThemeSecondaryColor(color.hex)} disableAlpha className="!shadow-none" />
+                </div>
+              </>
+            )}
            </div>
         </CardContent>
       </Card>
