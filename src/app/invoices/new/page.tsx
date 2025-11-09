@@ -40,33 +40,37 @@ function NewInvoicePageContents() {
   const docNumberPrefix = docType === 'quotation' ? 'QUO' : 'INV';
 
   useEffect(() => {
-    if (draftId) {
-      const savedDrafts = JSON.parse(
-        localStorage.getItem('invoice-drafts') || '[]'
-      );
-      const draftToEdit = savedDrafts.find((d: any) => d.id === draftId);
-      if (draftToEdit) {
-        setInvoice(draftToEdit);
-        if (draftToEdit.template) setTemplate(draftToEdit.template);
-        if (draftToEdit.accentColor) setAccentColor(draftToEdit.accentColor);
-        if (draftToEdit.secondaryColor) setSecondaryColor(draftToEdit.secondaryColor);
+    // This function will only run on the client, avoiding hydration issues.
+    const loadData = () => {
+      if (draftId) {
+        const savedDrafts = JSON.parse(
+          localStorage.getItem('invoice-drafts') || '[]'
+        );
+        const draftToEdit = savedDrafts.find((d: any) => d.id === draftId);
+        if (draftToEdit) {
+          setInvoice(draftToEdit);
+          if (draftToEdit.template) setTemplate(draftToEdit.template);
+          if (draftToEdit.accentColor) setAccentColor(draftToEdit.accentColor);
+          if (draftToEdit.secondaryColor) setSecondaryColor(draftToEdit.secondaryColor);
+        }
+      } else {
+        // Load from settings for new invoices
+        const savedSettings = JSON.parse(localStorage.getItem('company-settings') || '{}');
+        const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
+        setInvoice({
+          ...initialInvoiceState,
+          id: uuidv4(),
+          type: docType,
+          invoiceNumber: newInvoiceNumber,
+          company: savedSettings.company || initialInvoiceState.company,
+          logoUrl: savedSettings.logoUrl || '',
+        });
+        setTemplate(savedSettings.defaultTemplate || 'classic');
+        setAccentColor(savedSettings.themeColor || '#F7931E');
+        setSecondaryColor(savedSettings.themeSecondaryColor || '#0b1f44');
       }
-    } else {
-      // Load from settings for new invoices
-      const savedSettings = JSON.parse(localStorage.getItem('company-settings') || '{}');
-      const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
-      setInvoice({
-        ...initialInvoiceState,
-        id: uuidv4(),
-        type: docType,
-        invoiceNumber: newInvoiceNumber,
-        company: savedSettings.company || initialInvoiceState.company,
-        logoUrl: savedSettings.logoUrl || '',
-      });
-      setTemplate(savedSettings.defaultTemplate || 'classic');
-      setAccentColor(savedSettings.themeColor || '#F7931E');
-      setSecondaryColor(savedSettings.themeSecondaryColor || '#0b1f44');
-    }
+    };
+    loadData();
   }, [draftId, docType, docNumberPrefix]);
 
   useEffect(() => {
