@@ -18,14 +18,6 @@ import {
 
 import type { Template } from '@/app/invoices/new/page';
 
-// Dynamically import the color picker to avoid SSR issues
-import dynamic from 'next/dynamic';
-const ChromePicker = dynamic(
-  () => import('react-color').then((mod) => mod.ChromePicker),
-  { ssr: false }
-);
-
-
 interface CompanyInfo {
   name: string;
   email: string;
@@ -43,21 +35,15 @@ export default function SettingsPage() {
     website: '',
   });
   const [logoUrl, setLogoUrl] = useState('');
-  const [themeColor, setThemeColor] = useState('#F7931E');
-  const [themeSecondaryColor, setThemeSecondaryColor] = useState('#0b1f44');
   const [defaultTemplate, setDefaultTemplate] = useState<Template>('classic');
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     // Load saved settings from localStorage on component mount
     const savedSettings = localStorage.getItem('company-settings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       setCompany(settings.company || { name: '', email: '', phone: '', address: '', website: '' });
       setLogoUrl(settings.logoUrl || '');
-      setThemeColor(settings.themeColor || '#F7931E');
-      setThemeSecondaryColor(settings.themeSecondaryColor || '#0b1f44');
       setDefaultTemplate(settings.defaultTemplate || 'classic');
     }
   }, []);
@@ -81,8 +67,6 @@ export default function SettingsPage() {
     const settings = {
       company,
       logoUrl,
-      themeColor,
-      themeSecondaryColor,
       defaultTemplate,
     };
     localStorage.setItem('company-settings', JSON.stringify(settings));
@@ -141,36 +125,22 @@ export default function SettingsPage() {
                     )}
                   <Input id="logo" type="file" onChange={handleLogoChange} accept="image/*" />
               </div>
-               <div className="space-y-2">
-                 <Label>Default Template</Label>
-                  <Select value={defaultTemplate} onValueChange={(value) => setDefaultTemplate(value as Template)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="classic">Classic</SelectItem>
-                      <SelectItem value="modern">Modern</SelectItem>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="ginyard">Ginyard</SelectItem>
-                      <SelectItem value="vss">VSS</SelectItem>
-                      <SelectItem value="cvs">CVS</SelectItem>
-                    </SelectContent>
-                  </Select>
-               </div>
            </div>
-           <div className="space-y-2 grid grid-cols-2 gap-4">
-            {isClient && (
-              <>
-                <div>
-                    <Label>Default Theme Color</Label>
-                    <ChromePicker color={themeColor} onChange={(color) => setThemeColor(color.hex)} disableAlpha className="!shadow-none" />
-                </div>
-                <div>
-                    <Label>Default Secondary Color</Label>
-                    <ChromePicker color={themeSecondaryColor} onChange={(color) => setThemeSecondaryColor(color.hex)} disableAlpha className="!shadow-none" />
-                </div>
-              </>
-            )}
+           <div className="space-y-2">
+             <Label>Default Template</Label>
+              <Select value={defaultTemplate} onValuechange={(value) => setDefaultTemplate(value as Template)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select template" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="classic">Classic</SelectItem>
+                  <SelectItem value="modern">Modern</SelectItem>
+                  <SelectItem value="professional">Professional</SelectItem>
+                  <SelectItem value="ginyard">Ginyard</SelectItem>
+                  <SelectItem value="vss">VSS</SelectItem>
+                  <SelectItem value="cvs">CVS</SelectItem>
+                </SelectContent>
+              </Select>
            </div>
         </CardContent>
       </Card>

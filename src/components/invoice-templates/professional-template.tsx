@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
@@ -5,13 +6,12 @@ import type { Invoice } from '@/app/invoices/new/page';
 
 interface ProfessionalTemplateProps {
   invoice: Invoice;
-  accentColor: string;
-  secondaryColor: string;
 }
 
-export function ProfessionalTemplate({ invoice, accentColor }: ProfessionalTemplateProps) {
+export function ProfessionalTemplate({ invoice }: ProfessionalTemplateProps) {
   const { company, client, items, total, subtotal, tax, type } = invoice;
   const docTitle = type === 'quotation' ? 'Quotation' : 'Invoice';
+  const accentColor = '#003366'; // Default color
 
   return (
     <div className="bg-white p-8 text-black font-sans text-sm">

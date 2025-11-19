@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
@@ -5,13 +6,13 @@ import type { Invoice } from '@/app/invoices/new/page';
 
 interface GinyardTemplateProps {
   invoice: Invoice;
-  accentColor: string;
-  secondaryColor: string;
 }
 
-export function GinyardTemplate({ invoice, accentColor, secondaryColor }: GinyardTemplateProps) {
+export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
   const { company, client, items, total, subtotal, tax, type } = invoice;
   const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
+  const secondaryColor = '#002d4c'; // Default color
+  const accentColor = '#004d7a'; // Default color
 
   return (
     <div

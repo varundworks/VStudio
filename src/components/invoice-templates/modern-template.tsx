@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
@@ -5,13 +6,13 @@ import type { Invoice } from '@/app/invoices/new/page';
 
 interface ModernTemplateProps {
   invoice: Invoice;
-  accentColor: string;
-  secondaryColor: string;
 }
 
-export function ModernTemplate({ invoice, accentColor, secondaryColor }: ModernTemplateProps) {
+export function ModernTemplate({ invoice }: ModernTemplateProps) {
   const { company, client, items, total, subtotal, tax, type } = invoice;
   const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
+  const secondaryColor = '#0b1f44'; // Default color
+  const accentColor = '#f7931e'; // Default color
 
   return (
     <div className="bg-white text-black font-sans text-sm flex flex-col min-h-full">
