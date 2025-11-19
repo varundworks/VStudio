@@ -29,6 +29,10 @@ export function InvoiceFullPreview({
 }: InvoiceFullPreviewProps) {
   const SelectedTemplate = templates[template];
 
+  if (!SelectedTemplate) {
+    return null;
+  }
+
   return (
     <div id="invoice-full-preview" className="w-[800px] h-auto bg-white shadow-lg mx-auto my-4">
       <SelectedTemplate invoice={invoice} />
