@@ -76,7 +76,7 @@ export function InvoicePreview({
              >
                <div
                   id="invoice-preview"
-                  className="w-[800px] h-[1128px] origin-top-left bg-white"
+                  className="w-[800px] h-auto origin-top-left bg-white"
                   style={{
                     transform: 'scale(calc(100% / 800px))', // Dynamically scale based on container width
                   }}
