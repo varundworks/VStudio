@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,16 +69,20 @@ export function InvoicePreview({
       </CardHeader>
       <CardContent>
         {/* Container for the scaled preview */}
-        <div className="w-full aspect-[8.5/11] bg-muted rounded-md border overflow-hidden">
+        <div className="w-full aspect-[8.5/11] bg-muted rounded-md border overflow-hidden relative">
             <div
-                id="invoice-preview"
-                className="w-[800px] h-[1128px] origin-top-left bg-white"
-                style={{
-                  transform: 'scale(var(--tw-scale-x, 0.4))',
-                  transformOrigin: 'top left',
-                }}
+                id="invoice-preview-wrapper"
+                className="absolute top-0 left-0 w-full h-full"
              >
-               <SelectedTemplate invoice={invoice} />
+               <div
+                  id="invoice-preview"
+                  className="w-[800px] h-[1128px] origin-top-left bg-white"
+                  style={{
+                    transform: 'scale(calc(100% / 800px))', // Dynamically scale based on container width
+                  }}
+               >
+                 <SelectedTemplate invoice={invoice} />
+               </div>
             </div>
         </div>
          {/* Hidden, full-sized version for PDF generation */}
