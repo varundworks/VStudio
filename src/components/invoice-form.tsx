@@ -13,10 +13,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/utils';
-import type { Invoice } from '@/app/invoices/new/page';
+import type { Invoice, Template } from '@/app/invoices/new/page';
+import { InvoiceFullPreview } from '@/components/invoice-full-preview';
 
 interface InvoiceFormProps {
   invoice: Invoice;
+  template: Template;
   setInvoice: React.Dispatch<React.SetStateAction<Invoice>>;
   onSaveDraft: () => void;
   onClearForm: () => void;
@@ -25,6 +27,7 @@ interface InvoiceFormProps {
 
 export function InvoiceForm({
   invoice,
+  template,
   setInvoice,
   onSaveDraft,
   onClearForm,
@@ -76,16 +79,16 @@ export function InvoiceForm({
   };
 
   const handleGeneratePDF = () => {
-    const input = document.getElementById('invoice-full-preview');
+    const input = document.getElementById('pdf-generator');
     if (input) {
       html2canvas(input, {
-        scale: 4, 
+        scale: 4,
         logging: true,
         useCORS: true,
-        width: input.scrollWidth,
-        height: input.scrollHeight,
-        windowWidth: input.scrollWidth,
-        windowHeight: input.scrollHeight,
+        width: input.offsetWidth,
+        height: input.offsetHeight,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight,
       }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4', true);
@@ -101,13 +104,16 @@ export function InvoiceForm({
           height = pdfHeight;
           width = height * ratio;
         }
-        
+
         const x = (pdfWidth - width) / 2;
         const y = 0;
 
         pdf.addImage(imgData, 'PNG', x, y, width, height, undefined, 'FAST');
         pdf.save(`${invoice.type}-${invoice.invoiceNumber || 'download'}.pdf`);
       });
+    } else {
+        console.error("PDF generation failed: element with id 'pdf-generator' not found.");
+        alert("Sorry, something went wrong while generating the PDF. Please try again.");
     }
   };
   
@@ -115,6 +121,13 @@ export function InvoiceForm({
 
   return (
     <div className="space-y-8">
+       {/* Hidden component for PDF generation */}
+       <div className="fixed -z-10 -left-[10000px] top-0">
+         <div id="pdf-generator" className="w-[800px] h-auto">
+            <InvoiceFullPreview invoice={invoice} template={template} />
+         </div>
+       </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Client Info</CardTitle>
