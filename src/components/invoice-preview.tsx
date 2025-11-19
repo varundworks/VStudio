@@ -69,12 +69,14 @@ export function InvoicePreview({
       </CardHeader>
       <CardContent>
         {/* Container for the scaled preview */}
-        <div className="w-full aspect-[8.5/11] bg-muted rounded-md border overflow-hidden">
+        <div className="w-full aspect-[8.5/11] bg-muted rounded-md border overflow-hidden relative">
           <div
             id="invoice-preview"
-            className="w-[800px] h-[1128px] bg-white origin-top-left"
+            className="absolute top-0 left-0 origin-top-left bg-white"
             style={{
-              transform: 'scale(0.6) translate(15%, 15%)', // Increased scale and adjusted position
+                width: '800px',
+                height: '1128px',
+                transform: 'scale(calc(100% / 800px))',
             }}
           >
             <SelectedTemplate invoice={invoice} />
