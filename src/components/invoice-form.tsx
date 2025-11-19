@@ -20,6 +20,7 @@ interface InvoiceFormProps {
   setInvoice: React.Dispatch<React.SetStateAction<Invoice>>;
   onSaveDraft: () => void;
   onClearForm: () => void;
+  onPreview: () => void;
 }
 
 export function InvoiceForm({
@@ -27,6 +28,7 @@ export function InvoiceForm({
   setInvoice,
   onSaveDraft,
   onClearForm,
+  onPreview,
 }: InvoiceFormProps) {
   const handleInputChange = (
     section: 'client',
@@ -74,10 +76,10 @@ export function InvoiceForm({
   };
 
   const handleGeneratePDF = () => {
-    const input = document.getElementById('invoice-to-print');
+    const input = document.getElementById('invoice-full-preview');
     if (input) {
       html2canvas(input, {
-        scale: 4, // Use a higher scale for better resolution
+        scale: 4, 
         logging: true,
         useCORS: true,
         width: input.scrollWidth,
@@ -287,7 +289,8 @@ export function InvoiceForm({
           Clear
         </Button>
         <Button onClick={onSaveDraft}>Save as Draft</Button>
-        <Button onClick={handleGeneratePDF} variant="secondary">Download PDF</Button>
+        <Button onClick={onPreview} variant="secondary">Preview</Button>
+        <Button onClick={handleGeneratePDF} variant="default">Download PDF</Button>
       </div>
     </div>
   );

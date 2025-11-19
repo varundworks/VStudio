@@ -4,7 +4,6 @@
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { InvoiceForm } from '@/components/invoice-form';
-import { InvoicePreview } from '@/components/invoice-preview';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Dialog,
@@ -16,6 +15,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { FileText, FileSignature } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { InvoiceFullPreview } from '@/components/invoice-full-preview';
+
 
 const initialInvoiceState = {
   id: '',
@@ -39,7 +48,7 @@ export type DocumentType = 'invoice' | 'quotation';
 function NewInvoicePageContents() {
   const [invoice, setInvoice] = useState<Invoice>(initialInvoiceState);
   const [template, setTemplate] = useState<Template>('classic');
-  const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,14 +57,6 @@ function NewInvoicePageContents() {
 
   const docTitle = useMemo(() => docType === 'quotation' ? 'Quotation' : 'Invoice', [docType]);
   const docNumberPrefix = useMemo(() => docType === 'quotation' ? 'QUO' : 'INV', [docType]);
-
-  useEffect(() => {
-    if (!docType && !draftId) {
-      setShowTypeSelector(true);
-    } else {
-      setShowTypeSelector(false);
-    }
-  }, [docType, draftId]);
 
   useEffect(() => {
     const loadData = () => {
@@ -161,29 +162,58 @@ function NewInvoicePageContents() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-      <div className="lg:sticky lg:top-8 order-last lg:order-first">
-        <InvoicePreview
-          invoice={invoice}
-          template={template}
-          onTemplateChange={setTemplate}
-        />
-      </div>
-      <div className="space-y-8">
+    <>
+      <div className="space-y-8 max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">New {docTitle}</h1>
           <p className="mt-2 text-muted-foreground">
             Fill out the form below to create a new {docTitle.toLowerCase()}.
           </p>
         </div>
+        
+        <div className="space-y-2">
+            <Label>Template</Label>
+            <Select
+              value={template}
+              onValueChange={(value) => setTemplate(value as Template)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select template" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="classic">Classic</SelectItem>
+                <SelectItem value="modern">Modern</SelectItem>
+                <SelectItem value="professional">Professional</SelectItem>
+                <SelectItem value="ginyard">Ginyard</SelectItem>
+                <SelectItem value="vss">VSS</SelectItem>
+                <SelectItem value="cvs">CVS</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
         <InvoiceForm
           invoice={invoice}
           setInvoice={setInvoice}
           onSaveDraft={handleSaveDraft}
           onClearForm={handleClearForm}
+          onPreview={() => setShowPreview(true)}
         />
       </div>
-    </div>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+          <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+              <DialogHeader>
+                  <DialogTitle>{docTitle} Preview</DialogTitle>
+              </DialogHeader>
+              <div className="flex-grow overflow-auto">
+                <InvoiceFullPreview invoice={invoice} template={template} />
+              </div>
+               <div className="mt-4 flex justify-end">
+                  <Button variant="outline" onClick={() => setShowPreview(false)}>Close</Button>
+              </div>
+          </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
