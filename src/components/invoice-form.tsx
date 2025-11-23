@@ -18,20 +18,20 @@ import { InvoiceFullPreview } from '@/components/invoice-full-preview';
 
 interface InvoiceFormProps {
   invoice: Invoice;
-  template: Template;
   setInvoice: React.Dispatch<React.SetStateAction<Invoice>>;
   onSaveDraft: () => void;
   onClearForm: () => void;
   onPreview: () => void;
+  template: Template;
 }
 
 export function InvoiceForm({
   invoice,
-  template,
   setInvoice,
   onSaveDraft,
   onClearForm,
   onPreview,
+  template,
 }: InvoiceFormProps) {
   const handleInputChange = (
     section: 'client',
@@ -122,8 +122,8 @@ export function InvoiceForm({
 
   return (
     <div className="space-y-8">
-       {/* Hidden component for PDF generation */}
-       <div className="fixed -z-10 -left-[10000px] top-0">
+      {/* Hidden component for PDF generation */}
+       <div className="fixed opacity-0 -z-10 top-0 left-0 w-0 h-0 overflow-hidden">
          <div id="pdf-generator" className="w-[800px] h-auto">
             <InvoiceFullPreview invoice={invoice} template={template} />
          </div>
