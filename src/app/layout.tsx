@@ -9,6 +9,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "V Studio - Invoice & Quotation",
   description: "Create and manage invoices and quotations",
+  manifest: '/manifest.json',
+  themeColor: '#002D62',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'V Studio',
+  },
   icons: {
     icon: '/logo.jpg',
     apple: '/logo.jpg',
