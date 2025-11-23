@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppLayout } from "@/components/app-layout";
+import { SplashScreen } from "@/components/splash-screen";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppLayout>
-          <div className="p-4 md:p-8">{children}</div>
-        </AppLayout>
+        <SplashScreen>
+          <AppLayout>
+            <div className="p-4 md:p-8">{children}</div>
+          </AppLayout>
+        </SplashScreen>
       </body>
     </html>
   );
