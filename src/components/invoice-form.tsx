@@ -353,8 +353,8 @@ export function InvoiceForm({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Column Headers */}
-            <div className="grid grid-cols-1 md:grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 text-xs font-semibold text-muted-foreground pb-2 border-b">
+            {/* Column Headers - Desktop Only */}
+            <div className="hidden md:grid grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 text-xs font-semibold text-muted-foreground pb-2 border-b">
               <div>Item</div>
               <div>Unit</div>
               <div>Quantity</div>
@@ -369,6 +369,7 @@ export function InvoiceForm({
                 className="grid grid-cols-1 md:grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 items-start"
               >
                 <div className="relative">
+                  <Label className="md:hidden">Item</Label>
                   <Textarea
                     placeholder="Item name"
                     value={item.item}
@@ -398,6 +399,7 @@ export function InvoiceForm({
                   )}
                 </div>
                 <div>
+                  <Label className="md:hidden">Unit</Label>
                   <Select
                     value={item.unit}
                     onValueChange={(value) =>
@@ -416,6 +418,7 @@ export function InvoiceForm({
                   </Select>
                 </div>
                 <div>
+                  <Label className="md:hidden">Quantity</Label>
                   <Input
                     type="number"
                     placeholder="Qty"
@@ -431,6 +434,7 @@ export function InvoiceForm({
                   />
                 </div>
                 <div>
+                  <Label className="md:hidden">Unit Rate</Label>
                   <Input
                     type="number"
                     placeholder="Rate"
@@ -446,6 +450,7 @@ export function InvoiceForm({
                   />
                 </div>
                 <div>
+                  <Label className="md:hidden">Amount</Label>
                   <Input
                     type="number"
                     placeholder="Amount"
@@ -454,7 +459,7 @@ export function InvoiceForm({
                     className="bg-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <div className="flex items-end h-full">
+                <div className="flex items-end h-full md:mt-0 -mt-2">
                   <Button
                     variant="ghost"
                     size="icon"
