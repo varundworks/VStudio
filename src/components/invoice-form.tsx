@@ -369,7 +369,6 @@ export function InvoiceForm({
                 className="grid grid-cols-1 md:grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 items-start"
               >
                 <div className="relative">
-                  <label className="text-xs font-semibold text-muted-foreground md:hidden mb-1 block">Item</label>
                   <Textarea
                     placeholder="Item name"
                     value={item.item}
@@ -399,7 +398,6 @@ export function InvoiceForm({
                   )}
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground md:hidden mb-1 block">Unit</label>
                   <Select
                     value={item.unit}
                     onValueChange={(value) =>
@@ -418,7 +416,6 @@ export function InvoiceForm({
                   </Select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground md:hidden mb-1 block">Quantity</label>
                   <Input
                     type="number"
                     placeholder="Qty"
@@ -434,7 +431,6 @@ export function InvoiceForm({
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground md:hidden mb-1 block">Unit Rate</label>
                   <Input
                     type="number"
                     placeholder="Rate"
@@ -450,7 +446,6 @@ export function InvoiceForm({
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground md:hidden mb-1 block">Amount</label>
                   <Input
                     type="number"
                     placeholder="Amount"
