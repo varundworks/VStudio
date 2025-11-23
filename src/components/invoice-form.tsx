@@ -366,24 +366,26 @@ export function InvoiceForm({
             {invoice.items.map((item) => (
               <div
                 key={item.id}
-                className="grid grid-cols-1 md:grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 items-start"
+                className="space-y-3 md:space-y-0 md:grid md:grid-cols-[2fr_100px_100px_100px_100px_auto] gap-2 items-start p-3 md:p-0 border md:border-0 rounded"
               >
                 <div className="relative">
-                  <Label className="md:hidden">Item</Label>
-                  <Textarea
-                    placeholder="Item name"
-                    value={item.item}
-                    onChange={(e) =>
-                      handleItemChange(item.id, 'item', e.target.value)
-                    }
-                    onBlur={() => {
-                      setTimeout(() => {
-                        setItemSuggestions(prev => ({ ...prev, [item.id]: [] }));
-                        setActiveItemId(null);
-                      }, 200);
-                    }}
-                    className="min-h-[40px]"
-                  />
+                  <div className="grid grid-cols-[80px_1fr] gap-2 items-center md:block">
+                    <Label className="md:hidden text-sm font-medium">Item</Label>
+                    <Textarea
+                      placeholder="Item name"
+                      value={item.item}
+                      onChange={(e) =>
+                        handleItemChange(item.id, 'item', e.target.value)
+                      }
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setItemSuggestions(prev => ({ ...prev, [item.id]: [] }));
+                          setActiveItemId(null);
+                        }, 200);
+                      }}
+                      className="min-h-[40px]"
+                    />
+                  </div>
                   {itemSuggestions[item.id]?.length > 0 && activeItemId === item.id && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                       {itemSuggestions[item.id].map((suggestion, index) => (
@@ -398,8 +400,8 @@ export function InvoiceForm({
                     </div>
                   )}
                 </div>
-                <div>
-                  <Label className="md:hidden">Unit</Label>
+                <div className="grid grid-cols-[80px_1fr] gap-2 items-center md:block">
+                  <Label className="md:hidden text-sm font-medium">Unit</Label>
                   <Select
                     value={item.unit}
                     onValueChange={(value) =>
@@ -417,8 +419,8 @@ export function InvoiceForm({
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label className="md:hidden">Quantity</Label>
+                <div className="grid grid-cols-[80px_1fr] gap-2 items-center md:block">
+                  <Label className="md:hidden text-sm font-medium">Quantity</Label>
                   <Input
                     type="number"
                     placeholder="Qty"
@@ -433,8 +435,8 @@ export function InvoiceForm({
                     className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <div>
-                  <Label className="md:hidden">Unit Rate</Label>
+                <div className="grid grid-cols-[80px_1fr] gap-2 items-center md:block">
+                  <Label className="md:hidden text-sm font-medium">Unit Rate</Label>
                   <Input
                     type="number"
                     placeholder="Rate"
@@ -449,8 +451,8 @@ export function InvoiceForm({
                     className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <div>
-                  <Label className="md:hidden">Amount</Label>
+                <div className="grid grid-cols-[80px_1fr] gap-2 items-center md:block">
+                  <Label className="md:hidden text-sm font-medium">Amount</Label>
                   <Input
                     type="number"
                     placeholder="Amount"
@@ -459,13 +461,13 @@ export function InvoiceForm({
                     className="bg-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <div className="flex items-end h-full md:mt-0 -mt-2">
+                <div className="flex items-center justify-end md:items-end md:h-full">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveItem(item.id)}
                     disabled={invoice.items.length === 1}
-                    className="mt-auto"
+                    className="md:mt-auto"
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
