@@ -25,8 +25,7 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
             />
           </div>
           <h1 className="text-5xl font-bold text-white mb-2 animate-fade-in-up">V STUDIO</h1>
-          <p className="text-xl text-blue-200 mb-8 animate-fade-in-up" style={{ animationDelay: '200ms' }}>Invoice & Quotation System</p>
-          <div className="flex items-center justify-center space-x-2">
+          <div className="flex items-center justify-center space-x-2 mt-8">
             <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
             <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
             <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
