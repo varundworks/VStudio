@@ -15,7 +15,7 @@ export function CvsTemplate({ invoice }: CvsTemplateProps) {
   const docTitle = type === 'quotation' ? 'Quotation' : 'Invoice';
 
   return (
-    <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-full relative">
+    <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-[1128px] relative">
       {/* Watermark */}
       <div className="absolute inset-0 flex items-center justify-center z-0">
           <svg width="300" height="300" viewBox="0 0 100 100" className="opacity-10">
@@ -79,19 +79,21 @@ export function CvsTemplate({ invoice }: CvsTemplateProps) {
             <table className="w-full mb-8">
                 <thead>
                     <tr className="text-white" style={{ backgroundColor: cvsBlue }}>
-                        <th className="text-left font-bold p-2">Item Description</th>
+                        <th className="text-left font-bold p-2">Item</th>
+                        <th className="text-center font-bold p-2">Unit</th>
                         <th className="text-center font-bold p-2">Qty</th>
-                        <th className="text-right font-bold p-2">Unit Price</th>
-                        <th className="text-right font-bold p-2">Total</th>
+                        <th className="text-right font-bold p-2">Unit Rate</th>
+                        <th className="text-right font-bold p-2">Amount</th>
                     </tr>
                 </thead>
                 <tbody className="bg-gray-100">
                     {items.map(item => (
                         <tr key={item.id}>
-                            <td className="p-2 border-b">{item.description}</td>
+                            <td className="p-2 border-b">{item.item}</td>
+                            <td className="p-2 border-b text-center">{item.unit}</td>
                             <td className="p-2 border-b text-center">{item.quantity}</td>
-                            <td className="p-2 border-b text-right">{formatCurrency(item.rate)}</td>
-                            <td className="p-2 border-b text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                            <td className="p-2 border-b text-right">{formatCurrency(item.unitRate)}</td>
+                            <td className="p-2 border-b text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -108,7 +110,7 @@ export function CvsTemplate({ invoice }: CvsTemplateProps) {
                         <span>{formatCurrency(subtotal * (tax / 100))}</span>
                     </div>
                     <div className="flex justify-between font-bold text-2xl p-2 rounded" style={{ backgroundColor: cvsBlue, color: 'white' }}>
-                        <span>Amount Due</span>
+                        <span>Total Amount</span>
                         <span>{formatCurrency(total)}</span>
                     </div>
                 </div>

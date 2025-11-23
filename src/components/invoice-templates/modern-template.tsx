@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import type { Invoice } from '@/app/invoices/new/page';
 
@@ -14,7 +13,7 @@ export function ModernTemplate({ invoice }: ModernTemplateProps) {
   const accentColor = '#3455DB';
 
   return (
-    <div className="bg-white text-black font-sans text-sm flex flex-col min-h-full">
+    <div className="bg-white text-black font-sans text-sm flex flex-col min-h-[1128px]">
       <div
         className="relative text-white h-[180px] w-full"
         style={{
@@ -24,7 +23,7 @@ export function ModernTemplate({ invoice }: ModernTemplateProps) {
         }}
       >
         {invoice.logoUrl && (
-          <Image
+          <img
             src={invoice.logoUrl}
             alt="Company Logo"
             width={150}
@@ -59,19 +58,23 @@ export function ModernTemplate({ invoice }: ModernTemplateProps) {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr style={{ backgroundColor: accentColor, color: 'white' }}>
-              <th className="border border-gray-300 p-2.5 text-left">ITEM NAME</th>
-              <th className="border border-gray-300 p-2.5">PRICE</th>
+              <th className="border border-gray-300 p-2.5 text-left">ITEM</th>
+              <th className="border border-gray-300 p-2.5 text-left">DESCRIPTION</th>
+              <th className="border border-gray-300 p-2.5">UNIT</th>
               <th className="border border-gray-300 p-2.5">QTY</th>
-              <th className="border border-gray-300 p-2.5 text-right">TOTAL</th>
+              <th className="border border-gray-300 p-2.5">UNIT RATE</th>
+              <th className="border border-gray-300 p-2.5 text-right">AMOUNT</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
+                <td className="border border-gray-300 p-2.5">{item.item}</td>
                 <td className="border border-gray-300 p-2.5">{item.description}</td>
-                <td className="border border-gray-300 p-2.5 text-center">{formatCurrency(item.rate)}</td>
+                <td className="border border-gray-300 p-2.5 text-center">{item.unit}</td>
                 <td className="border border-gray-300 p-2.5 text-center">{item.quantity}</td>
-                <td className="border border-gray-300 p-2.5 text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                <td className="border border-gray-300 p-2.5 text-center">{formatCurrency(item.unitRate)}</td>
+                <td className="border border-gray-300 p-2.5 text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
               </tr>
             ))}
           </tbody>

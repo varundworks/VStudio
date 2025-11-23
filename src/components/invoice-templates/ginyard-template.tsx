@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import type { Invoice } from '@/app/invoices/new/page';
 
@@ -16,13 +15,13 @@ export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
 
   return (
     <div
-      className="font-sans text-sm rounded-lg overflow-hidden flex flex-col min-h-full"
+      className="font-sans text-sm rounded-lg overflow-hidden flex flex-col min-h-[1128px]"
       style={{ backgroundColor: secondaryColor, color: textColor }}
     >
       <header className="p-8">
         <div className="flex items-center gap-4">
           {invoice.logoUrl && (
-            <Image
+            <img
               src={invoice.logoUrl}
               alt="Company Logo"
               width={80}
@@ -52,19 +51,23 @@ export function GinyardTemplate({ invoice }: GinyardTemplateProps) {
           <table className="w-full text-left">
             <thead style={{ backgroundColor: accentColor, color: 'white' }}>
               <tr>
+                <th className="p-3 text-left font-bold">ITEM</th>
                 <th className="p-3 text-left font-bold">DESCRIPTION</th>
+                <th className="p-3 text-center font-bold">UNIT</th>
                 <th className="p-3 text-center font-bold">QTY</th>
-                <th className="p-3 text-right font-bold">RATE</th>
-                <th className="p-3 text-right font-bold">TOTAL</th>
+                <th className="p-3 text-right font-bold">UNIT RATE</th>
+                <th className="p-3 text-right font-bold">AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               {items.map(item => (
                 <tr key={item.id} className="border-b" style={{ borderColor: accentColor }}>
+                  <td className="p-3 text-left">{item.item}</td>
                   <td className="p-3 text-left">{item.description}</td>
+                  <td className="p-3 text-center">{item.unit}</td>
                   <td className="p-3 text-center">{item.quantity}</td>
-                  <td className="p-3 text-right">{formatCurrency(item.rate)}</td>
-                  <td className="p-3 text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                  <td className="p-3 text-right">{formatCurrency(item.unitRate)}</td>
+                  <td className="p-3 text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
                 </tr>
               ))}
             </tbody>

@@ -14,45 +14,43 @@ export function VssTemplate({ invoice }: VssTemplateProps) {
   const docTitle = type === 'quotation' ? 'QUOTATION' : 'INVOICE';
 
   return (
-    <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-full relative">
-        {/* Watermark */}
+    <div className="bg-white p-0 text-black font-sans text-sm flex flex-col min-h-[1128px] relative">
+        {/* Watermark - Dynamic Logo */}
         <div className="absolute inset-0 flex items-center justify-center z-0">
-            <svg width="300" height="300" viewBox="0 0 100 100" className="opacity-10">
-                <path d="M0 50 L20 50 L30 25 L40 75 L50 50 L60 50 L50 90 L40 10 L30 90 L20 10 L10 50 Z" fill="#E60000" transform="translate(5, -5)"/>
-                <path d="M45 50 L55 50 L70 20 L80 80 L90 50 L100 50" stroke="#002D62" strokeWidth="10" fill="none" strokeLinejoin="round" strokeLinecap="round" />
-            </svg>
+            {invoice.logoUrl ? (
+              <img src={invoice.logoUrl} alt="Watermark" className="opacity-10" style={{ width: '878px', height: '878px', objectFit: 'contain' }} />
+            ) : (
+              <svg width="878" height="878" viewBox="0 0 100 100" className="opacity-10">
+                  <path d="M0 50 L20 50 L30 25 L40 75 L50 50 L60 50 L50 90 L40 10 L30 90 L20 10 L10 50 Z" fill="#E60000" transform="translate(5, -5)"/>
+                  <path d="M45 50 L55 50 L70 20 L80 80 L90 50 L100 50" stroke="#002D62" strokeWidth="10" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+              </svg>
+            )}
         </div>
 
         <div className="relative z-10 flex flex-col flex-grow">
             {/* Header */}
             <header className="p-4">
                 <div className="flex justify-between items-start">
-                    <div className="flex items-start gap-4">
-                        <svg width="60" height="40" viewBox="0 0 65 45">
-                            <path d="M0 22.5 L13 22.5 L19.5 11.25 L26 33.75 L32.5 22.5 L39 22.5" stroke="#E60000" strokeWidth="5" fill="none" />
-                            <path d="M30 22.5 L35 40 L40 5 L45 40 L50 5" stroke="#002D62" strokeWidth="5" fill="none" />
-                            <path d="M50 22.5 L65 22.5" stroke="#002D62" strokeWidth="5" fill="none" />
-                        </svg>
+                    <div className="flex items-center gap-4">
+                        {invoice.logoUrl ? (
+                          <img src={invoice.logoUrl} alt="Company Logo" className="object-contain flex-shrink-0" style={{ width: '176px', height: '132px' }} />
+                        ) : (
+                          <svg width="176" height="132" viewBox="0 0 65 45" className="flex-shrink-0">
+                              <path d="M0 22.5 L13 22.5 L19.5 11.25 L26 33.75 L32.5 22.5 L39 22.5" stroke="#E60000" strokeWidth="5" fill="none" />
+                              <path d="M30 22.5 L35 40 L40 5 L45 40 L50 5" stroke="#002D62" strokeWidth="5" fill="none" />
+                              <path d="M50 22.5 L65 22.5" stroke="#002D62" strokeWidth="5" fill="none" />
+                          </svg>
+                        )}
                         <div>
                             <h1 className="text-2xl font-bold" style={{ color: vssBlue }}>VSS ELECTRICALS</h1>
                             <p className="font-semibold" style={{ color: vssRed }}>Govt. Licensed Class-I Electrical Contractor</p>
                         </div>
                     </div>
-                    <div className="flex">
-                        <div className="text-xs text-white p-2" style={{ backgroundColor: vssBlue }}>
-                            <p className="font-bold">Specialist in All Kinds of Electrical Works</p>
-                            <p>Domestic • Commercial • Industrial • Villas</p>
-                            <p>Electrical Metering Panel Board</p>
-                            <p>HT & LT Work & Licensing</p>
-                        </div>
-                        <div className="w-0 h-0"
-                            style={{
-                                borderTop: '35px solid transparent',
-                                borderBottom: '35px solid transparent',
-                                borderLeft: `20px solid ${vssBlue}`,
-                                borderRight: `20px solid ${vssRed}`,
-                            }}
-                        />
+                    <div className="text-xs text-white p-3 rounded mt-8" style={{ backgroundColor: vssBlue }}>
+                        <p className="font-bold">Specialist in All Kinds of Electrical Works</p>
+                        <p>Domestic • Commercial • Industrial • Villas</p>
+                        <p>Electrical Metering Panel Board</p>
+                        <p>HT & LT Work & Licensing</p>
                     </div>
                 </div>
                 <div className="mt-2 h-0.5" style={{ backgroundColor: vssBlue }}></div>
@@ -78,19 +76,21 @@ export function VssTemplate({ invoice }: VssTemplateProps) {
                 <table className="w-full text-left">
                     <thead>
                         <tr style={{ backgroundColor: vssBlue, color: 'white' }}>
-                            <th className="p-2">Description</th>
+                            <th className="p-2">Item</th>
+                            <th className="p-2 text-center">Unit</th>
                             <th className="p-2 text-center">Quantity</th>
-                            <th className="p-2 text-right">Rate</th>
+                            <th className="p-2 text-right">Unit Rate</th>
                             <th className="p-2 text-right">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items.map(item => (
                             <tr key={item.id} className="border-b">
-                                <td className="p-2">{item.description}</td>
+                                <td className="p-2">{item.item}</td>
+                                <td className="p-2 text-center">{item.unit}</td>
                                 <td className="p-2 text-center">{item.quantity}</td>
-                                <td className="p-2 text-right">{formatCurrency(item.rate)}</td>
-                                <td className="p-2 text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                                <td className="p-2 text-right">{formatCurrency(item.unitRate)}</td>
+                                <td className="p-2 text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
                             </tr>
                         ))}
                     </tbody>

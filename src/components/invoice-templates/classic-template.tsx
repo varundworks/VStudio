@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import type { Invoice } from '@/app/invoices/new/page';
 
@@ -13,10 +12,10 @@ export function ClassicTemplate({ invoice }: ClassicTemplateProps) {
   const accentColor = '#4B5563'; 
 
   return (
-    <div className="bg-white p-8 text-black font-serif text-sm">
+    <div className="bg-white p-8 text-black font-serif text-sm min-h-[1128px] flex flex-col">
       <header className="flex justify-between items-start mb-10 border-b-2 pb-4" style={{ borderColor: accentColor }}>
         <div>
-          {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
+          {invoice.logoUrl && <img src={invoice.logoUrl} alt="Company Logo" width={180} height={180} className="object-contain" />}
           <h1 className="text-4xl font-bold mt-4" style={{ color: accentColor }}>{docTitle}</h1>
           <p className="text-gray-500">{docTitle === 'INVOICE' ? 'Invoice' : 'Quotation'} #: {invoice.invoiceNumber}</p>
         </div>
@@ -42,23 +41,27 @@ export function ClassicTemplate({ invoice }: ClassicTemplateProps) {
         </div>
       </section>
 
-      <section className="mb-10">
+      <section className="mb-10 flex-grow">
         <table className="w-full">
           <thead style={{ backgroundColor: accentColor, color: 'white' }}>
             <tr>
+              <th className="p-2 text-left">Item</th>
               <th className="p-2 text-left">Description</th>
+              <th className="p-2 text-center">Unit</th>
               <th className="p-2 text-center">Quantity</th>
-              <th className="p-2 text-right">Rate</th>
+              <th className="p-2 text-right">Unit Rate</th>
               <th className="p-2 text-right">Amount</th>
             </tr>
           </thead>
           <tbody>
             {items.map(item => (
               <tr key={item.id} className="border-b">
+                <td className="p-2">{item.item}</td>
                 <td className="p-2">{item.description}</td>
+                <td className="p-2 text-center">{item.unit}</td>
                 <td className="p-2 text-center">{item.quantity}</td>
-                <td className="p-2 text-right">{formatCurrency(item.rate)}</td>
-                <td className="p-2 text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                <td className="p-2 text-right">{formatCurrency(item.unitRate)}</td>
+                <td className="p-2 text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
               </tr>
             ))}
           </tbody>

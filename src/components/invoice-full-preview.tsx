@@ -30,12 +30,15 @@ export function InvoiceFullPreview({
   const SelectedTemplate = templates[template];
 
   if (!SelectedTemplate) {
-    return null;
+    console.error('Template not found:', template);
+    return <div className="p-4 text-red-500">Template not found: {template}</div>;
   }
 
   return (
-    <div id="invoice-full-preview" className="w-[800px] h-auto bg-white shadow-lg mx-auto my-4">
-      <SelectedTemplate invoice={invoice} />
+    <div id="invoice-full-preview" className="w-full max-w-[800px] h-auto bg-white shadow-lg mx-auto">
+      <div className="w-full">
+        <SelectedTemplate invoice={invoice} />
+      </div>
     </div>
   );
 }

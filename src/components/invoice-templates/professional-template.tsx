@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import type { Invoice } from '@/app/invoices/new/page';
 
@@ -13,10 +12,10 @@ export function ProfessionalTemplate({ invoice }: ProfessionalTemplateProps) {
   const accentColor = '#003366'; // Default color
 
   return (
-    <div className="bg-white p-8 text-black font-sans text-sm">
+    <div className="bg-white p-8 text-black font-sans text-sm min-h-[1128px] flex flex-col">
         <div className="grid grid-cols-2 gap-4 mb-8">
             <div>
-                {invoice.logoUrl && <Image src={invoice.logoUrl} alt="Company Logo" width={200} height={200} className="object-contain" />}
+                {invoice.logoUrl && <img src={invoice.logoUrl} alt="Company Logo" width={200} height={200} className="object-contain" />}
             </div>
             <div className="text-right">
                 <h1 className="text-5xl font-extrabold uppercase" style={{ color: accentColor }}>{docTitle}</h1>
@@ -47,19 +46,23 @@ export function ProfessionalTemplate({ invoice }: ProfessionalTemplateProps) {
         <table className="w-full mb-8">
             <thead style={{ backgroundColor: accentColor }}>
                 <tr className="text-white">
-                    <th className="text-left font-bold p-2">Item Description</th>
+                    <th className="text-left font-bold p-2">Item</th>
+                    <th className="text-left font-bold p-2">Description</th>
+                    <th className="text-center font-bold p-2">Unit</th>
                     <th className="text-center font-bold p-2">Qty</th>
-                    <th className="text-right font-bold p-2">Unit Price</th>
-                    <th className="text-right font-bold p-2">Total</th>
+                    <th className="text-right font-bold p-2">Unit Rate</th>
+                    <th className="text-right font-bold p-2">Amount</th>
                 </tr>
             </thead>
             <tbody className="bg-gray-100">
                 {items.map(item => (
                     <tr key={item.id}>
+                        <td className="p-2 border-b">{item.item}</td>
                         <td className="p-2 border-b">{item.description}</td>
+                        <td className="p-2 border-b text-center">{item.unit}</td>
                         <td className="p-2 border-b text-center">{item.quantity}</td>
-                        <td className="p-2 border-b text-right">{formatCurrency(item.rate)}</td>
-                        <td className="p-2 border-b text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                        <td className="p-2 border-b text-right">{formatCurrency(item.unitRate)}</td>
+                        <td className="p-2 border-b text-right">{formatCurrency(item.quantity * item.unitRate)}</td>
                     </tr>
                 ))}
             </tbody>
@@ -82,7 +85,7 @@ export function ProfessionalTemplate({ invoice }: ProfessionalTemplateProps) {
             </div>
         </div>
 
-        <div className="mt-16 text-center text-xs text-gray-500">
+        <div className="mt-auto pt-16 text-center text-xs text-gray-500">
             <p>Thank you for your business.</p>
             <p>Please make payment by the due date.</p>
         </div>

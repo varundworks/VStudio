@@ -34,7 +34,7 @@ const initialInvoiceState = {
   client: { name: '', phone: '', address: '' },
   invoiceDate: new Date().toISOString().split('T')[0],
   dueDate: '',
-  items: [{ id: uuidv4(), description: '', quantity: 1, rate: 0 }],
+  items: [{ id: uuidv4(), item: '', unit: 'Nos', quantity: 1, unitRate: 0 }],
   tax: 0,
   subtotal: 0,
   total: 0,
@@ -80,7 +80,7 @@ function NewInvoicePageContents() {
           company: savedSettings.company || initialInvoiceState.company,
           logoUrl: savedSettings.logoUrl || '',
         });
-        setTemplate(savedSettings.defaultTemplate || 'classic');
+        setTemplate(savedSettings.defaultTemplate || 'vss');
       }
     };
     loadData();
@@ -88,7 +88,7 @@ function NewInvoicePageContents() {
 
   useEffect(() => {
     const subtotal = invoice.items.reduce(
-      (acc, item) => acc + item.quantity * item.rate,
+      (acc, item) => acc + item.quantity * item.unitRate,
       0
     );
     const taxAmount = subtotal * (invoice.tax / 100);
@@ -163,7 +163,7 @@ function NewInvoicePageContents() {
 
   return (
     <>
-      <div className="space-y-8 max-w-4xl mx-auto">
+      <div className="space-y-8 max-w-4xl mx-auto pb-16">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">New {docTitle}</h1>
           <p className="mt-2 text-muted-foreground">
@@ -181,10 +181,6 @@ function NewInvoicePageContents() {
                 <SelectValue placeholder="Select template" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="classic">Classic</SelectItem>
-                <SelectItem value="modern">Modern</SelectItem>
-                <SelectItem value="professional">Professional</SelectItem>
-                <SelectItem value="ginyard">Ginyard</SelectItem>
                 <SelectItem value="vss">VSS</SelectItem>
                 <SelectItem value="cvs">CVS</SelectItem>
               </SelectContent>
@@ -197,21 +193,24 @@ function NewInvoicePageContents() {
           onSaveDraft={handleSaveDraft}
           onClearForm={handleClearForm}
           onPreview={() => setShowPreview(true)}
+          template={template}
         />
       </div>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
-              <DialogHeader>
-                  <DialogTitle>{docTitle} Preview</DialogTitle>
-              </DialogHeader>
-              <div className="flex-grow overflow-auto">
-                <InvoiceFullPreview invoice={invoice} template={template} />
-              </div>
-               <div className="mt-4 flex justify-end">
-                  <Button variant="outline" onClick={() => setShowPreview(false)}>Close</Button>
-              </div>
-          </DialogContent>
+        <DialogContent className="max-w-[95vw] md:max-w-5xl max-h-[95vh] flex flex-col p-6">
+          <DialogHeader>
+            <DialogTitle>{docTitle} Preview</DialogTitle>
+          </DialogHeader>
+          <div className="flex-grow overflow-auto">
+            <InvoiceFullPreview invoice={invoice} template={template} />
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );
