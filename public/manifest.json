@@ -1,0 +1,16 @@
+{
+  "name": "V Studio - Invoice & Quotation",
+  "short_name": "V Studio",
+  "description": "Create and manage invoices and quotations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#002D62",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

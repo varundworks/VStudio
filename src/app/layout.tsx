@@ -6,8 +6,12 @@ import { AppLayout } from "@/components/app-layout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Invoice App",
-  description: "Create and manage invoices",
+  title: "V Studio - Invoice & Quotation",
+  description: "Create and manage invoices and quotations",
+  icons: {
+    icon: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
 };
 
 export default function RootLayout({
