@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppLayout } from "@/components/app-layout";
 import { SplashScreen } from "@/components/splash-screen";
+import { RegisterServiceWorker } from "./register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,7 +31,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#002D62" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="V Studio" />
+      </head>
       <body className={inter.className}>
+        <RegisterServiceWorker />
         <SplashScreen>
           <AppLayout>
             <div className="p-4 md:p-8">{children}</div>
