@@ -44,12 +44,12 @@ export function GtechTemplate({ invoice }: GtechTemplateProps) {
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
                             {invoice.logoUrl ? (
-                              <div className="relative bg-white rounded-full p-2" style={{ width: '150px', height: '150px' }}>
-                                <Image src={invoice.logoUrl} alt="G-Tech Car Care Logo" fill style={{ objectFit: 'contain', padding: '10px' }} className="rounded-full" />
+                              <div className="relative bg-white rounded-full p-3" style={{ width: '200px', height: '200px' }}>
+                                <Image src={invoice.logoUrl} alt="G-Tech Car Care Logo" fill style={{ objectFit: 'contain', padding: '12px' }} className="rounded-full" />
                               </div>
                             ) : (
-                              <div className="w-[150px] h-[150px] flex items-center justify-center border-4 rounded-full bg-white" style={{ borderColor: gtechLightBlue }}>
-                                <span className="text-2xl font-bold text-center" style={{ color: gtechNavy }}>G-TECH</span>
+                              <div className="w-[200px] h-[200px] flex items-center justify-center border-4 rounded-full bg-white" style={{ borderColor: gtechLightBlue }}>
+                                <span className="text-3xl font-bold text-center" style={{ color: gtechNavy }}>G-TECH</span>
                               </div>
                             )}
                             <div className="text-white">

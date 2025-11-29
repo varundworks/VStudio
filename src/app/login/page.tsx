@@ -53,10 +53,10 @@ export default function LoginPage() {
             <div className="flex justify-center mb-6">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-2xl ring-2 ring-white/30">
                 <Image 
-                  src="/logo.jpg" 
+                  src="/app-logo.png" 
                   alt="V Studio Logo" 
                   width={120} 
-                  height={90}
+                  height={120}
                   className="object-contain"
                   priority
                 />

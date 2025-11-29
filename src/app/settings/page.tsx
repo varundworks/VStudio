@@ -38,7 +38,7 @@ export default function SettingsPage() {
   const [defaultTemplate, setDefaultTemplate] = useState<Template>('classic');
   const { user } = useAuth();
 
-  // Get available templates based on user permissions
+  // Get available templates based on user permissions - only show their specific templates
   const availableTemplates = useMemo(() => {
     if (user?.allowedTemplates) {
       const templateLabels: Record<string, string> = {
@@ -46,34 +46,16 @@ export default function SettingsPage() {
         'cvs': 'CVS',
         'sv': 'SV Electricals',
         'gtech': 'G-Tech Car Care',
-        'classic': 'Classic',
-        'modern': 'Modern',
-        'professional': 'Professional',
-        'ginyard': 'Ginyard',
       };
-      return user.allowedTemplates.map(t => ({
-        value: t,
-        label: templateLabels[t] || t
-      }));
+      // Only include the user's specific brand templates (no generic ones)
+      return user.allowedTemplates
+        .filter(t => ['vss', 'cvs', 'sv', 'gtech'].includes(t))
+        .map(t => ({
+          value: t,
+          label: templateLabels[t] || t
+        }));
     }
-    // Fallback for backward compatibility
-    if (user?.canAccessVSSTemplates) {
-      return [
-        { value: 'vss', label: 'VSS' },
-        { value: 'cvs', label: 'CVS' },
-        { value: 'classic', label: 'Classic' },
-        { value: 'modern', label: 'Modern' },
-        { value: 'professional', label: 'Professional' },
-        { value: 'ginyard', label: 'Ginyard' },
-      ];
-    }
-    return [
-      { value: 'sv', label: 'SV Electricals' },
-      { value: 'classic', label: 'Classic' },
-      { value: 'modern', label: 'Modern' },
-      { value: 'professional', label: 'Professional' },
-      { value: 'ginyard', label: 'Ginyard' },
-    ];
+    return [];
   }, [user]);
 
   useEffect(() => {
@@ -117,7 +99,15 @@ export default function SettingsPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoUrl(reader.result as string);
+        const newLogoUrl = reader.result as string;
+        setLogoUrl(newLogoUrl);
+        // Immediately save to localStorage so it appears in templates
+        if (user) {
+          const userSettingsKey = `company-settings-${user.email}`;
+          const currentSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
+          currentSettings.logoUrl = newLogoUrl;
+          localStorage.setItem(userSettingsKey, JSON.stringify(currentSettings));
+        }
       };
       reader.readAsDataURL(file);
     }

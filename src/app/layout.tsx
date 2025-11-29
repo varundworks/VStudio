@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     title: 'V Studio',
   },
   icons: {
-    icon: '/logo.jpg',
-    apple: '/logo.jpg',
+    icon: '/app-logo.png',
+    apple: '/app-logo.png',
   },
 };
 
@@ -34,6 +34,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#002D62" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="V Studio" />
