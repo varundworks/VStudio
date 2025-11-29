@@ -27,6 +27,8 @@ interface CompanyInfo {
 }
 
 export default function SettingsPage() {
+  const { user } = useAuth();
+
   const [company, setCompany] = useState<CompanyInfo>({
     name: '',
     email: '',
@@ -35,8 +37,9 @@ export default function SettingsPage() {
     website: '',
   });
   const [logoUrl, setLogoUrl] = useState('');
-  const [defaultTemplate, setDefaultTemplate] = useState<Template>('classic');
-  const { user } = useAuth();
+  const [defaultTemplate, setDefaultTemplate] = useState<Template | ''>(
+    () => (user?.allowedTemplates?.[0] as Template) ?? ''
+  );
 
   // Get available templates based on user permissions - only show their specific templates
   const availableTemplates = useMemo(() => {
@@ -115,13 +118,19 @@ export default function SettingsPage() {
 
   const handleSaveSettings = () => {
     if (!user) return;
+    const templateToSave = (defaultTemplate || availableTemplates[0]?.value) as Template | undefined;
+    if (!templateToSave) {
+      alert('Please choose a template to continue.');
+      return;
+    }
     const settings = {
       company,
       logoUrl,
-      defaultTemplate,
+      defaultTemplate: templateToSave,
     };
     const userSettingsKey = `company-settings-${user.email}`;
     localStorage.setItem(userSettingsKey, JSON.stringify(settings));
+    setDefaultTemplate(templateToSave);
     alert('Settings saved!');
   };
 
@@ -180,7 +189,10 @@ export default function SettingsPage() {
            </div>
            <div className="space-y-2">
              <Label>Default Template</Label>
-              <Select value={defaultTemplate} onValueChange={(value) => setDefaultTemplate(value as Template)}>
+              <Select
+                value={defaultTemplate || undefined}
+                onValueChange={(value) => setDefaultTemplate(value as Template)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select template" />
                 </SelectTrigger>

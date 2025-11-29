@@ -47,10 +47,12 @@ export type Template = 'classic' | 'modern' | 'professional' | 'ginyard' | 'vss'
 export type DocumentType = 'invoice' | 'quotation';
 
 function NewInvoicePageContents() {
-  const [invoice, setInvoice] = useState<Invoice>(initialInvoiceState);
-  const [template, setTemplate] = useState<Template>('classic');
-  const [showPreview, setShowPreview] = useState(false);
   const { user } = useAuth();
+  const [invoice, setInvoice] = useState<Invoice>(initialInvoiceState);
+  const [template, setTemplate] = useState<Template | ''>(
+    () => (user?.allowedTemplates?.[0] as Template) ?? ''
+  );
+  const [showPreview, setShowPreview] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,6 +84,8 @@ function NewInvoicePageContents() {
       if (docType && user) {
         const autoSaveKey = `temp-invoice-${user.email}-${docType}`;
         const savedData = localStorage.getItem(autoSaveKey);
+        const userSettingsKey = `company-settings-${user.email}`;
+        const savedSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
         
         if (savedData) {
           // Restore auto-saved data
@@ -91,8 +95,18 @@ function NewInvoicePageContents() {
           
           // Only restore if saved within last 7 days
           if (timeDiff < ONE_WEEK) {
-            setInvoice(parsedData);
-            if (parsedData.template) setTemplate(parsedData.template);
+            const mergedInvoice = {
+              ...parsedData,
+              logoUrl: savedSettings.logoUrl || parsedData.logoUrl || '',
+              company: savedSettings.company || parsedData.company || initialInvoiceState.company,
+            } as Invoice;
+            setInvoice(mergedInvoice);
+            const templateToUse =
+              (parsedData.template && user.allowedTemplates?.includes(parsedData.template)
+                ? parsedData.template
+                : (savedSettings.defaultTemplate as Template | undefined)) ||
+              (availableTemplates[0]?.value as Template | undefined);
+            if (templateToUse) setTemplate(templateToUse);
             return;
           } else {
             // Clear old data
@@ -101,8 +115,6 @@ function NewInvoicePageContents() {
         }
         
         // No saved data or expired - create new
-        const userSettingsKey = `company-settings-${user.email}`;
-        const savedSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
         const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
         const fallbackTemplate = (availableTemplates[0]?.value as Template | undefined) ?? null;
         let defaultTemplate = fallbackTemplate ?? 'classic';
@@ -121,7 +133,7 @@ function NewInvoicePageContents() {
       }
     };
     loadData();
-  }, [docType, docNumberPrefix, user]);
+  }, [docType, docNumberPrefix, user, availableTemplates]);
 
   useEffect(() => {
     const subtotal = invoice.items.reduce(
@@ -135,7 +147,7 @@ function NewInvoicePageContents() {
 
   // Auto-save to localStorage (temporary persistence)
   useEffect(() => {
-    if (user && invoice.id && docType) {
+    if (user && invoice.id && docType && template) {
       const autoSaveKey = `temp-invoice-${user.email}-${docType}`;
       const dataToSave = { ...invoice, template, lastModified: Date.now() };
       localStorage.setItem(autoSaveKey, JSON.stringify(dataToSave));
@@ -144,7 +156,7 @@ function NewInvoicePageContents() {
 
   useEffect(() => {
     if (!availableTemplates.length) return;
-    if (!availableTemplates.some((t) => t.value === template)) {
+    if (!template || !availableTemplates.some((t) => t.value === template)) {
       setTemplate(availableTemplates[0].value as Template);
     }
   }, [availableTemplates, template]);
@@ -198,34 +210,29 @@ function NewInvoicePageContents() {
   }
 
   const handleClearForm = () => {
-     if (!docType || !user) return;
-     
-     // Clear auto-saved data
-     const autoSaveKey = `temp-invoice-${user.email}-${docType}`;
-     localStorage.removeItem(autoSaveKey);
-     
-     const userSettingsKey = `company-settings-${user.email}`;
-     const savedSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
-     const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
-     // Determine default template based on user's allowed templates
-     let defaultTemplate: Template = 'classic';
-     if (user.allowedTemplates && user.allowedTemplates.length > 0) {
-       defaultTemplate = user.allowedTemplates[0] as Template;
-     } else if (user.canAccessVSSTemplates) {
-       defaultTemplate = 'vss';
-     } else {
-       defaultTemplate = 'sv';
-     }
-     defaultTemplate = (savedSettings.defaultTemplate || defaultTemplate) as Template;
-     setInvoice({
-       ...initialInvoiceState,
-       id: uuidv4(),
-       type: docType,
-       invoiceNumber: newInvoiceNumber,
-       company: savedSettings.company || initialInvoiceState.company,
-       logoUrl: savedSettings.logoUrl || '',
-     });
-     setTemplate(defaultTemplate);
+    if (!docType || !user) return;
+
+    // Clear auto-saved data
+    const autoSaveKey = `temp-invoice-${user.email}-${docType}`;
+    localStorage.removeItem(autoSaveKey);
+
+    const userSettingsKey = `company-settings-${user.email}`;
+    const savedSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
+    const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
+    const fallbackTemplate = (availableTemplates[0]?.value as Template | undefined) ?? null;
+    let defaultTemplate = fallbackTemplate ?? 'classic';
+    if (savedSettings.defaultTemplate && user.allowedTemplates?.includes(savedSettings.defaultTemplate)) {
+      defaultTemplate = savedSettings.defaultTemplate as Template;
+    }
+    setInvoice({
+      ...initialInvoiceState,
+      id: uuidv4(),
+      type: docType,
+      invoiceNumber: newInvoiceNumber,
+      company: savedSettings.company || initialInvoiceState.company,
+      logoUrl: savedSettings.logoUrl || '',
+    });
+    if (defaultTemplate) setTemplate(defaultTemplate);
   };
 
   if (!docType) {
@@ -266,7 +273,7 @@ function NewInvoicePageContents() {
         <div className="space-y-2">
             <Label>Template</Label>
             <Select
-              value={template}
+              value={template || undefined}
               onValueChange={(value) => setTemplate(value as Template)}
             >
               <SelectTrigger>
@@ -282,13 +289,19 @@ function NewInvoicePageContents() {
             </Select>
           </div>
 
-        <InvoiceForm
-          invoice={invoice}
-          setInvoice={setInvoice}
-          onClearForm={handleClearForm}
-          onPreview={() => setShowPreview(true)}
-          template={template}
-        />
+        {template ? (
+          <InvoiceForm
+            invoice={invoice}
+            setInvoice={setInvoice}
+            onClearForm={handleClearForm}
+            onPreview={() => setShowPreview(true)}
+            template={template as Template}
+          />
+        ) : (
+          <div className="border border-dashed rounded-lg p-6 text-center text-muted-foreground">
+            Preparing your templates...
+          </div>
+        )}
       </div>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
