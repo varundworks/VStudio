@@ -64,18 +64,15 @@ function NewInvoicePageContents() {
   const availableTemplates = useMemo(() => {
     if (user?.allowedTemplates) {
       const templateLabels: Record<string, string> = {
-        'vss': 'VSS',
-        'cvs': 'CVS',
-        'sv': 'SV Electricals',
-        'gtech': 'G-Tech Car Care',
-      };
-      // Only include the user's specific brand templates (no generic ones)
-      return user.allowedTemplates
-        .filter(t => ['vss', 'cvs', 'sv', 'gtech'].includes(t))
-        .map(t => ({
-          value: t,
-          label: templateLabels[t] || t
-        }));
+        vss: 'VSS',
+        cvs: 'CVS',
+        sv: 'SV Electricals',
+        gtech: 'G-Tech Car Care',
+      } as const;
+      return user.allowedTemplates.map((t) => ({
+        value: t,
+        label: templateLabels[t as keyof typeof templateLabels] ?? t,
+      }));
     }
     return [];
   }, [user]);
@@ -107,16 +104,11 @@ function NewInvoicePageContents() {
         const userSettingsKey = `company-settings-${user.email}`;
         const savedSettings = JSON.parse(localStorage.getItem(userSettingsKey) || '{}');
         const newInvoiceNumber = `${docNumberPrefix}-${String(Date.now()).slice(-6)}`;
-        // Determine default template based on user's allowed templates
-        let defaultTemplate: Template = 'classic';
-        if (user.allowedTemplates && user.allowedTemplates.length > 0) {
-          defaultTemplate = user.allowedTemplates[0] as Template;
-        } else if (user.canAccessVSSTemplates) {
-          defaultTemplate = 'vss';
-        } else {
-          defaultTemplate = 'sv';
+        const fallbackTemplate = (availableTemplates[0]?.value as Template | undefined) ?? null;
+        let defaultTemplate = fallbackTemplate ?? 'classic';
+        if (savedSettings.defaultTemplate && user.allowedTemplates?.includes(savedSettings.defaultTemplate)) {
+          defaultTemplate = savedSettings.defaultTemplate as Template;
         }
-        defaultTemplate = (savedSettings.defaultTemplate || defaultTemplate) as Template;
         setInvoice({
           ...initialInvoiceState,
           id: uuidv4(),
@@ -150,48 +142,56 @@ function NewInvoicePageContents() {
     }
   }, [invoice, template, user, docType]);
 
+  useEffect(() => {
+    if (!availableTemplates.length) return;
+    if (!availableTemplates.some((t) => t.value === template)) {
+      setTemplate(availableTemplates[0].value as Template);
+    }
+  }, [availableTemplates, template]);
+
   // Listen for logo updates from settings page
   useEffect(() => {
     if (!user) return;
 
-    const handleStorageChange = (e: StorageEvent) => {
-      const userSettingsKey = `company-settings-${user.email}`;
-      if (e.key === userSettingsKey && e.newValue) {
-        const settings = JSON.parse(e.newValue);
-        if (settings.logoUrl !== invoice.logoUrl) {
-          setInvoice(prev => ({
-            ...prev,
-            logoUrl: settings.logoUrl || '',
-            company: settings.company || prev.company,
-          }));
-        }
-      }
-    };
+    const userSettingsKey = `company-settings-${user.email}`;
 
-    // Listen for changes from other tabs/windows
-    window.addEventListener('storage', handleStorageChange);
-
-    // Poll for changes in same tab (storage event doesn't fire in same tab)
-    const pollInterval = setInterval(() => {
-      const userSettingsKey = `company-settings-${user.email}`;
+    const syncInvoiceFromSettings = () => {
       const savedSettings = localStorage.getItem(userSettingsKey);
       if (savedSettings) {
         const settings = JSON.parse(savedSettings);
-        if (settings.logoUrl !== invoice.logoUrl) {
-          setInvoice(prev => ({
+        setInvoice((prev) => {
+          const nextLogo = settings.logoUrl || '';
+          const nextCompany = settings.company || prev.company;
+          if (prev.logoUrl === nextLogo && JSON.stringify(prev.company) === JSON.stringify(nextCompany)) {
+            return prev;
+          }
+          return {
             ...prev,
-            logoUrl: settings.logoUrl || '',
-            company: settings.company || prev.company,
-          }));
-        }
+            logoUrl: nextLogo,
+            company: nextCompany,
+          };
+        });
       }
-    }, 500); // Check every 500ms
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === userSettingsKey) {
+        syncInvoiceFromSettings();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Sync immediately on mount
+    syncInvoiceFromSettings();
+
+    const pollInterval = setInterval(syncInvoiceFromSettings, 500);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(pollInterval);
     };
-  }, [user, invoice.logoUrl]);
+  }, [user]);
 
   const handleSelectType = (type: DocumentType) => {
     router.push(`/invoices/new?type=${type}`);

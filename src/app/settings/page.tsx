@@ -42,18 +42,15 @@ export default function SettingsPage() {
   const availableTemplates = useMemo(() => {
     if (user?.allowedTemplates) {
       const templateLabels: Record<string, string> = {
-        'vss': 'VSS',
-        'cvs': 'CVS',
-        'sv': 'SV Electricals',
-        'gtech': 'G-Tech Car Care',
-      };
-      // Only include the user's specific brand templates (no generic ones)
-      return user.allowedTemplates
-        .filter(t => ['vss', 'cvs', 'sv', 'gtech'].includes(t))
-        .map(t => ({
-          value: t,
-          label: templateLabels[t] || t
-        }));
+        vss: 'VSS',
+        cvs: 'CVS',
+        sv: 'SV Electricals',
+        gtech: 'G-Tech Car Care',
+      } as const;
+      return user.allowedTemplates.map((t) => ({
+        value: t,
+        label: templateLabels[t as keyof typeof templateLabels] ?? t,
+      }));
     }
     return [];
   }, [user]);
@@ -67,28 +64,31 @@ export default function SettingsPage() {
         const settings = JSON.parse(savedSettings);
         setCompany(settings.company || { name: '', email: '', phone: '', address: '', website: '' });
         setLogoUrl(settings.logoUrl || '');
-        // Determine default template
-        let defaultTemp: Template = 'classic';
-        if (user.allowedTemplates && user.allowedTemplates.length > 0) {
-          defaultTemp = user.allowedTemplates[0] as Template;
-        } else if (user.canAccessVSSTemplates) {
-          defaultTemp = 'vss';
-        } else {
-          defaultTemp = 'sv';
+        const fallbackTemplate = availableTemplates[0]?.value as Template | undefined;
+        const savedTemplate = settings.defaultTemplate as Template | undefined;
+        if (savedTemplate && user.allowedTemplates?.includes(savedTemplate)) {
+          setDefaultTemplate(savedTemplate);
+        } else if (fallbackTemplate) {
+          setDefaultTemplate(fallbackTemplate);
         }
-        setDefaultTemplate(settings.defaultTemplate || defaultTemp);
       } else {
-        // Set default template based on user permissions
-        if (user.allowedTemplates && user.allowedTemplates.length > 0) {
-          setDefaultTemplate(user.allowedTemplates[0] as Template);
-        } else if (user.canAccessVSSTemplates) {
-          setDefaultTemplate('vss');
-        } else {
-          setDefaultTemplate('sv');
+        const fallbackTemplate = availableTemplates[0]?.value as Template | undefined;
+        if (fallbackTemplate) {
+          setDefaultTemplate(fallbackTemplate);
         }
       }
     }
-  }, [user]);
+  }, [user, availableTemplates]);
+
+  useEffect(() => {
+    if (!availableTemplates.length) return;
+    setDefaultTemplate((prev) => {
+      if (prev && availableTemplates.some((t) => t.value === prev)) {
+        return prev;
+      }
+      return availableTemplates[0]?.value as Template;
+    });
+  }, [availableTemplates]);
 
   const handleInputChange = (field: keyof CompanyInfo, value: string) => {
     setCompany((prev) => ({ ...prev, [field]: value }));

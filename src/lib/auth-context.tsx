@@ -24,13 +24,13 @@ const USERS = {
     password: 'vss1234',
     name: 'VSS Electricals',
     canAccessVSSTemplates: true,
-    allowedTemplates: ['vss', 'cvs', 'classic', 'modern', 'professional', 'ginyard'],
+    allowedTemplates: ['vss', 'cvs'],
   },
   'svelectricals001@vstudio.com': {
     password: 'sv1234',
     name: 'SV Electricals',
     canAccessVSSTemplates: false,
-    allowedTemplates: ['sv', 'classic', 'modern', 'professional', 'ginyard'],
+    allowedTemplates: ['sv'],
   },
   'gtechcarcare001@vstudio.com': {
     password: 'mani1234',
