@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AppLayout } from "@/components/app-layout";
-import { SplashScreen } from "@/components/splash-screen";
+import { AuthProvider } from "@/lib/auth-context";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 import { RegisterServiceWorker } from "./register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -40,11 +40,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <RegisterServiceWorker />
-        <SplashScreen>
-          <AppLayout>
-            <div className="p-4 md:p-8">{children}</div>
-          </AppLayout>
-        </SplashScreen>
+        <AuthProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

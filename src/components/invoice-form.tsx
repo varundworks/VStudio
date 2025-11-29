@@ -126,7 +126,6 @@ const COMMON_ITEMS = [
 interface InvoiceFormProps {
   invoice: Invoice;
   setInvoice: React.Dispatch<React.SetStateAction<Invoice>>;
-  onSaveDraft: () => void;
   onClearForm: () => void;
   onPreview: () => void;
   template: Template;
@@ -135,7 +134,6 @@ interface InvoiceFormProps {
 export function InvoiceForm({
   invoice,
   setInvoice,
-  onSaveDraft,
   onClearForm,
   onPreview,
   template,
@@ -514,7 +512,6 @@ export function InvoiceForm({
         <Button variant="outline" onClick={onClearForm}>
           Clear
         </Button>
-        <Button onClick={onSaveDraft}>Save as Draft</Button>
         <Button onClick={onPreview} variant="secondary">Preview</Button>
         <Button onClick={handleGeneratePDF} variant="default">Download PDF</Button>
       </div>

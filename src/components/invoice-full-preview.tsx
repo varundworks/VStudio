@@ -7,6 +7,8 @@ import { ProfessionalTemplate } from './invoice-templates/professional-template'
 import { GinyardTemplate } from './invoice-templates/ginyard-template';
 import { VssTemplate } from './invoice-templates/vss-template';
 import { CvsTemplate } from './invoice-templates/cvs-template';
+import { SvTemplate } from './invoice-templates/sv-template';
+import { GtechTemplate } from './invoice-templates/gtech-template';
 import type { Invoice, Template } from '@/app/invoices/new/page';
 
 interface InvoiceFullPreviewProps {
@@ -21,6 +23,8 @@ const templates = {
   ginyard: GinyardTemplate,
   vss: VssTemplate,
   cvs: CvsTemplate,
+  sv: SvTemplate,
+  gtech: GtechTemplate,
 };
 
 export function InvoiceFullPreview({

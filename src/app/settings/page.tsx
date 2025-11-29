@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAuth } from '@/lib/auth-context';
 
 import type { Template } from '@/app/invoices/new/page';
 
@@ -35,17 +36,77 @@ export default function SettingsPage() {
   });
   const [logoUrl, setLogoUrl] = useState('');
   const [defaultTemplate, setDefaultTemplate] = useState<Template>('classic');
+  const { user } = useAuth();
+
+  // Get available templates based on user permissions
+  const availableTemplates = useMemo(() => {
+    if (user?.allowedTemplates) {
+      const templateLabels: Record<string, string> = {
+        'vss': 'VSS',
+        'cvs': 'CVS',
+        'sv': 'SV Electricals',
+        'gtech': 'G-Tech Car Care',
+        'classic': 'Classic',
+        'modern': 'Modern',
+        'professional': 'Professional',
+        'ginyard': 'Ginyard',
+      };
+      return user.allowedTemplates.map(t => ({
+        value: t,
+        label: templateLabels[t] || t
+      }));
+    }
+    // Fallback for backward compatibility
+    if (user?.canAccessVSSTemplates) {
+      return [
+        { value: 'vss', label: 'VSS' },
+        { value: 'cvs', label: 'CVS' },
+        { value: 'classic', label: 'Classic' },
+        { value: 'modern', label: 'Modern' },
+        { value: 'professional', label: 'Professional' },
+        { value: 'ginyard', label: 'Ginyard' },
+      ];
+    }
+    return [
+      { value: 'sv', label: 'SV Electricals' },
+      { value: 'classic', label: 'Classic' },
+      { value: 'modern', label: 'Modern' },
+      { value: 'professional', label: 'Professional' },
+      { value: 'ginyard', label: 'Ginyard' },
+    ];
+  }, [user]);
 
   useEffect(() => {
-    // Load saved settings from localStorage on component mount
-    const savedSettings = localStorage.getItem('company-settings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      setCompany(settings.company || { name: '', email: '', phone: '', address: '', website: '' });
-      setLogoUrl(settings.logoUrl || '');
-      setDefaultTemplate(settings.defaultTemplate || 'classic');
+    // Load user-specific saved settings from localStorage on component mount
+    if (user) {
+      const userSettingsKey = `company-settings-${user.email}`;
+      const savedSettings = localStorage.getItem(userSettingsKey);
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        setCompany(settings.company || { name: '', email: '', phone: '', address: '', website: '' });
+        setLogoUrl(settings.logoUrl || '');
+        // Determine default template
+        let defaultTemp: Template = 'classic';
+        if (user.allowedTemplates && user.allowedTemplates.length > 0) {
+          defaultTemp = user.allowedTemplates[0] as Template;
+        } else if (user.canAccessVSSTemplates) {
+          defaultTemp = 'vss';
+        } else {
+          defaultTemp = 'sv';
+        }
+        setDefaultTemplate(settings.defaultTemplate || defaultTemp);
+      } else {
+        // Set default template based on user permissions
+        if (user.allowedTemplates && user.allowedTemplates.length > 0) {
+          setDefaultTemplate(user.allowedTemplates[0] as Template);
+        } else if (user.canAccessVSSTemplates) {
+          setDefaultTemplate('vss');
+        } else {
+          setDefaultTemplate('sv');
+        }
+      }
     }
-  }, []);
+  }, [user]);
 
   const handleInputChange = (field: keyof CompanyInfo, value: string) => {
     setCompany((prev) => ({ ...prev, [field]: value }));
@@ -63,12 +124,14 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = () => {
+    if (!user) return;
     const settings = {
       company,
       logoUrl,
       defaultTemplate,
     };
-    localStorage.setItem('company-settings', JSON.stringify(settings));
+    const userSettingsKey = `company-settings-${user.email}`;
+    localStorage.setItem(userSettingsKey, JSON.stringify(settings));
     alert('Settings saved!');
   };
 
@@ -132,12 +195,11 @@ export default function SettingsPage() {
                   <SelectValue placeholder="Select template" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="classic">Classic</SelectItem>
-                  <SelectItem value="modern">Modern</SelectItem>
-                  <SelectItem value="professional">Professional</SelectItem>
-                  <SelectItem value="ginyard">Ginyard</SelectItem>
-                  <SelectItem value="vss">VSS</SelectItem>
-                  <SelectItem value="cvs">CVS</SelectItem>
+                  {availableTemplates.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
            </div>

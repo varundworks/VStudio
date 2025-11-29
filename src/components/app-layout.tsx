@@ -1,12 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, Plus, Settings } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Home, Plus, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/lib/auth-context';
+import { Button } from '@/components/ui/button';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const navLinks = [
     { href: '/dashboard', icon: Home },
@@ -16,6 +25,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Top bar with user info */}
+      <header className="bg-card border-b px-4 py-3">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div>
+            <h2 className="text-sm font-semibold">{user?.name}</h2>
+            <p className="text-xs text-muted-foreground">{user?.email}</p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
+      </header>
+
       <main className="flex-1 pb-24">{children}</main>
 
       <footer className="fixed bottom-0 left-0 right-0 bg-card border-t z-10">
