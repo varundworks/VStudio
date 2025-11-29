@@ -150,6 +150,49 @@ function NewInvoicePageContents() {
     }
   }, [invoice, template, user, docType]);
 
+  // Listen for logo updates from settings page
+  useEffect(() => {
+    if (!user) return;
+
+    const handleStorageChange = (e: StorageEvent) => {
+      const userSettingsKey = `company-settings-${user.email}`;
+      if (e.key === userSettingsKey && e.newValue) {
+        const settings = JSON.parse(e.newValue);
+        if (settings.logoUrl !== invoice.logoUrl) {
+          setInvoice(prev => ({
+            ...prev,
+            logoUrl: settings.logoUrl || '',
+            company: settings.company || prev.company,
+          }));
+        }
+      }
+    };
+
+    // Listen for changes from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Poll for changes in same tab (storage event doesn't fire in same tab)
+    const pollInterval = setInterval(() => {
+      const userSettingsKey = `company-settings-${user.email}`;
+      const savedSettings = localStorage.getItem(userSettingsKey);
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        if (settings.logoUrl !== invoice.logoUrl) {
+          setInvoice(prev => ({
+            ...prev,
+            logoUrl: settings.logoUrl || '',
+            company: settings.company || prev.company,
+          }));
+        }
+      }
+    }, 500); // Check every 500ms
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(pollInterval);
+    };
+  }, [user, invoice.logoUrl]);
+
   const handleSelectType = (type: DocumentType) => {
     router.push(`/invoices/new?type=${type}`);
   }
